@@ -78,24 +78,6 @@ int main() {
     auto const_value1 = mlir::SmallVector<llvm::APFloat>(4, llvm::APFloat(1.0f));
     auto const_value2 = mlir::SmallVector<llvm::APFloat>(4, llvm::APFloat(2.0f));
 
-    // Create constant operations with dense attribute values
-    auto const1 = builder.create<mlir::sar::ConstOp>(
-        loc, 
-        tensor_type, 
-        mlir::DenseElementsAttr::get(
-            mlir::RankedTensorType::get(shape, f32), 
-            const_value1
-        )
-    );
-    auto const2 = builder.create<mlir::sar::ConstOp>(
-        loc, 
-        tensor_type, 
-        mlir::DenseElementsAttr::get(
-            mlir::RankedTensorType::get(shape, f32), 
-            const_value2
-        )
-    );
-
     /******************************************************************
      * Create a function for SAR computation
      ******************************************************************/
@@ -126,10 +108,27 @@ int main() {
      * Build computation inside function using function arguments
      ******************************************************************/
 
-    // Build computation graph: (arg0 + const1) * const2 - (arg0 + const1)
-    // Note: This uses both function arguments and module-level constants
+    // Create constant operations with dense attribute values
+    auto const1 = builder.create<mlir::sar::ConstOp>(
+        loc, 
+        tensor_type, 
+        mlir::DenseElementsAttr::get(
+            mlir::RankedTensorType::get(shape, f32), 
+            const_value1
+        )
+    );
+    auto const2 = builder.create<mlir::sar::ConstOp>(
+        loc, 
+        tensor_type, 
+        mlir::DenseElementsAttr::get(
+            mlir::RankedTensorType::get(shape, f32), 
+            const_value2
+        )
+    );
+
+    // Build computation graph: (arg0 + const1) - (arg1 * const2)
     auto add = builder.create<mlir::sar::AddOp>(loc, arg0, const1);
-    auto mul = builder.create<mlir::sar::MulOp>(loc, add, const2);
+    auto mul = builder.create<mlir::sar::MulOp>(loc, arg1, const2);
     auto result = builder.create<mlir::sar::SubOp>(loc, add, mul);
 
     // Add print operation inside function
@@ -150,7 +149,10 @@ int main() {
 
     // Dump entire module to stdout
     llvm::outs() << "Final SAR module:\n";
-    module.dump();
+
+    mlir::OpPrintingFlags flags;
+    // flags.printGenericOpForm();
+    module.print(llvm::outs(), flags);
 
     return 0;
 }
