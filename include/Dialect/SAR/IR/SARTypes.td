@@ -18,8 +18,8 @@ def TensorType : SAR_Type<"tensor", []> {
 	let description = "A specialized tensor type in SAR dialect";
 
 	let parameters = (ins
-		ArrayRefParameter<"int64_t">:$shape, // Tensor shape dimensions
-		"Type":$elementType                  // Element data type
+		ArrayRefParameter<"int64_t">:$shape,  // Tensor shape dimensions
+		"Type":$elementType                   // Element data type
 	);
 
 	let genStorageClass = 1;

@@ -1,4 +1,4 @@
-set(LLVM_TARGET_DEFINITIONS SAROps.td)
+set(LLVM_TARGET_DEFINITIONS SAR.td)
 
 mlir_tablegen(SARDialect.h.inc --gen-dialect-decls -dialect=sar)
 

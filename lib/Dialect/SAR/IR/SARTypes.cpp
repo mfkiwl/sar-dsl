@@ -35,13 +35,13 @@ Type tensorType::parse(AsmParser &parser) {
     SmallVector<int64_t, 4> dimensions;
     Type elementType;
 
-    if (parser.parseLess()             || // <
+    if (parser.parseLess()             ||  // <
         parser.parseDimensionList(
             dimensions,
             /*allowDynamic=*/true,
-            /*withTrailingX=*/true)    || // dimensions
-        parser.parseType(elementType)  || // elementType
-        parser.parseGreater()) {          // >
+            /*withTrailingX=*/true)    ||  // dimensions
+        parser.parseType(elementType)  ||  // elementType
+        parser.parseGreater()) {           // >
 
         return Type();
     }

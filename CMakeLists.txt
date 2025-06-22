@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(MLIR_Tutorial LANGUAGES C CXX)
+project(mlir-sar LANGUAGES C CXX)
 
 if(POLICY CMP0116)
     cmake_policy(SET CMP0116 NEW)
