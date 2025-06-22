@@ -1,0 +1,11 @@
+#ifndef DIALECT_SAR_CONSTRAINTS_TD
+#define DIALECT_SAR_CONSTRAINTS_TD
+
+include "mlir/IR/CommonTypeConstraints.td"
+include "mlir/IR/CommonAttrConstraints.td"
+
+// Constraint for SAR tensor types requiring non-empty shape
+def AnySARTensor : Type<And<[CPred<"::mlir::isa<::mlir::sar::tensorType>($_self)">,
+                             CPred<"::mlir::cast<::mlir::sar::tensorType>($_self).getShape().size() > 0">]>>;
+
+#endif
