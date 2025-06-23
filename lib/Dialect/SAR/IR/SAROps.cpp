@@ -4,12 +4,12 @@
 #include "Dialect/SAR/IR/SARTypes.h"
 #include "Dialect/SAR/IR/SAROps.h"
 
-// Include generated op implementations
 #define GET_OP_CLASSES
 #include "Dialect/SAR/IR/SAROps.cpp.inc"
 
 namespace mlir::sar {
 
+// Register operations for the SAR dialect
 void SARDialect::registerOps() {
     llvm::outs() << "Register " << getDialectNamespace() << " op\n";
     addOperations<
@@ -18,4 +18,4 @@ void SARDialect::registerOps() {
     >();
 }
 
-}
+} // namespace mlir::sar

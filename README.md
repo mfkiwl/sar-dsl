@@ -7,7 +7,7 @@ The project is currently under development...
 - List tree
 
 ```bash
-tree -I "build" -I "llvm-project" -I "MLIR"
+tree -I "build" -I "llvm-project"
 ```
 
 - Build LLVM & MLIR

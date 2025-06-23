@@ -10,6 +10,8 @@ add_mlir_conversion_library(MLIRSARToLinalg
     LINK_LIBS PUBLIC
     MLIRLinalgDialect
     MLIRSARDialect
+    MLIRArithDialect
+    MLIRTensorDialect
     MLIRPass
-    MLIRTransformUtils
+    MLIRTransforms
 )
