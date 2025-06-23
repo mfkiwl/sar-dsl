@@ -1,8 +1,10 @@
+# include/Dialect/SAR/IR/CMakeLists.txt
+
 set(LLVM_TARGET_DEFINITIONS SAR.td)
 
-mlir_tablegen(SARDialect.h.inc --gen-dialect-decls -dialect=sar)
+mlir_tablegen(SARDialect.h.inc -gen-dialect-decls -dialect=sar)
 
-mlir_tablegen(SARDialect.cpp.inc --gen-dialect-defs -dialect=sar)
+mlir_tablegen(SARDialect.cpp.inc -gen-dialect-defs -dialect=sar)
 
 mlir_tablegen(SARTypes.h.inc -gen-typedef-decls -dialect=sar)
 

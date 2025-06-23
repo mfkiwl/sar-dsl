@@ -4,6 +4,12 @@ The project is currently under development...
 
 ## Instructions
 
+- List tree
+
+```bash
+tree -I "build" -I "llvm-project" -I "MLIR"
+```
+
 - Build LLVM & MLIR
 
 ```bash

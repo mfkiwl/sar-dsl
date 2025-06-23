@@ -1,3 +1,5 @@
+# lib/Dialect/SAR/IR/CMakeLists.txt
+
 add_mlir_dialect_library(MLIRSARDialect
     SARDialect.cpp
     SARTypes.cpp

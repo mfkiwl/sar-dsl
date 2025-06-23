@@ -1,3 +1,5 @@
+# Top CMakeLists.txt
+
 cmake_minimum_required(VERSION 3.15)
 project(mlir-sar LANGUAGES C CXX)
 
@@ -54,4 +56,5 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 add_subdirectory(include)
 add_subdirectory(lib)
+add_subdirectory(tools)
 add_subdirectory(test)

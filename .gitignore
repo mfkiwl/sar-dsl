@@ -1,4 +1,5 @@
 /build
+/MLIR
 .vscode
 .clangd
 .cache
