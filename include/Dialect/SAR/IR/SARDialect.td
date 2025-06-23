@@ -14,22 +14,18 @@ def SAR_Dialect : Dialect {
 
 	let cppNamespace = "::mlir::sar";
 
-	// Corrected dialect dependency
 	let dependentDialects = ["::mlir::tensor::TensorDialect"];
 
 	let discardableAttrs = (ins);
 
-	// Declare dialect initialization methods
 	let extraClassDeclaration = [{
 		static void sayHello();
         void registerTypes();
         void registerOps();
 	}];
 
-	// Enable properties-based attribute storage
 	let usePropertiesForAttributes = 1;
 
-	// Default settings
     let hasConstantMaterializer = 0;
     let hasNonDefaultDestructor = 1;
     let hasOperationAttrVerify = 0;

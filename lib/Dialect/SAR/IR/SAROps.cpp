@@ -9,7 +9,6 @@
 
 namespace mlir::sar {
 
-// Register operations for the SAR dialect
 void SARDialect::registerOps() {
     llvm::outs() << "Register " << getDialectNamespace() << " op\n";
     addOperations<

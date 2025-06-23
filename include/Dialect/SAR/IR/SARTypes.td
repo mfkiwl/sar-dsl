@@ -3,20 +3,20 @@
 #ifndef DIALECT_SAR_TYPES_TD
 #define DIALECT_SAR_TYPES_TD
 
+include "mlir/IR/DialectBase.td"
 include "mlir/IR/Traits.td"
 include "mlir/IR/AttrTypeBase.td"
+include "mlir/IR/BuiltinTypeInterfaces.td"
 
 include "Dialect/SAR/IR/SARDialect.td"
 
-// Base class for SAR-specific types
 class SAR_Type<string typeMnemonic, list<Trait> traits = [], string baseCppClass = "::mlir::Type">
         : TypeDef<SAR_Dialect, typeMnemonic, traits, baseCppClass> {
     let mnemonic = typeMnemonic;
     let typeName = dialect.name # "." # typeMnemonic;
 }
 
-// SAR-specific tensor type with shape and element type
-def TensorType : SAR_Type<"tensor", []> {
+def TensorType : SAR_Type<"tensor", [ShapedTypeInterface],"::mlir::TensorType"> {
     let summary = "SAR tensor type";
     let description = "A specialized tensor type in SAR dialect";
 
@@ -51,9 +51,9 @@ def TensorType : SAR_Type<"tensor", []> {
         using ::mlir::ShapedType::Trait<tensorType>::getNumDynamicDims;
         using ::mlir::ShapedType::Trait<tensorType>::getDimSize;
         using ::mlir::ShapedType::Trait<tensorType>::getDynamicDimIndex;
-        
+
         ::mlir::ShapedType cloneWith(::std::optional<::llvm::ArrayRef<int64_t>> shape, 
-                                     ::mlir::Type type) {
+                                     ::mlir::Type type) const {
             if (shape)
                 return mlir::sar::tensorType::get(getContext(), *shape, type);
             return mlir::sar::tensorType::get(getContext(), getShape(), type);

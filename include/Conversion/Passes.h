@@ -7,7 +7,7 @@
 
 namespace mlir::sar {
 
-#define GEN_PASS_DECL_CONVERTSARTOLINALGPASS
+#define GEN_PASS_DECL
 #define GEN_PASS_REGISTRATION
 #include "Conversion/Passes.h.inc"
 

@@ -21,23 +21,12 @@
 #include "Dialect/SAR/IR/SARDialect.h"
 
 int main(int argc, char **argv) {
-    // Register all MLIR passes
     mlir::registerAllPasses();
-    
-    // Create dialect registry
     mlir::DialectRegistry registry;
-    
-    // Register all core dialects and extensions
     registerAllDialects(registry);
     registerAllExtensions(registry);
-    
-    // Register custom SAR dialect
     registry.insert<mlir::sar::SARDialect>();
-    
-    // Register custom SAR conversion passes
     mlir::sar::registerSARConversionPasses();
-    
-    // Run the MLIR optimization driver
     return mlir::asMainReturnCode(
         mlir::MlirOptMain(argc, argv, "SAR Optimizer Driver", registry));
 }
