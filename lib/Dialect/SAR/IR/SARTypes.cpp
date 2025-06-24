@@ -2,8 +2,11 @@
 
 #include "llvm/ADT/TypeSwitch.h"
 #include "llvm/Support/LogicalResult.h"
+#include "llvm/Support/raw_ostream.h"
+#include "mlir/Dialect/Arith/IR/Arith.h"
 #include "mlir/IR/BuiltinTypeInterfaces.h"
 #include "mlir/IR/DialectImplementation.h"
+#include "mlir/IR/OpImplementation.h"
 #include "mlir/Support/LLVM.h"
 
 #include "Dialect/SAR/IR/SARDialect.h"
@@ -15,13 +18,14 @@
 namespace mlir::sar {
 
 void SARDialect::registerTypes() {
+    llvm::outs() << "Register " << getDialectNamespace() << " type\n";
     addTypes<
 #define GET_TYPEDEF_LIST
 #include "Dialect/SAR/IR/SARTypes.cpp.inc"
     >();
 }
 
-::mlir::LogicalResult tensorType::verify(
+::llvm::LogicalResult tensorType::verify(
     ::llvm::function_ref<::mlir::InFlightDiagnostic()> emitError,
     ::llvm::ArrayRef<int64_t> shape, Type elementType) {
     if (!elementType.isIntOrFloat()) {
@@ -30,7 +34,7 @@ void SARDialect::registerTypes() {
     return ::mlir::success();
 }
 
-::mlir::Type tensorType::parse(::mlir::AsmParser &parser) {
+Type tensorType::parse(AsmParser &parser) {
     if (parser.parseLess()) 
         return Type();
 
@@ -45,12 +49,12 @@ void SARDialect::registerTypes() {
     if (parser.parseGreater()) 
         return Type();
 
-    return get(parser.getContext(), dimensions, elementType);
+    return parser.getChecked<tensorType>(parser.getContext(), dimensions, elementType);
 }
 
-void tensorType::print(::mlir::AsmPrinter &printer) const {
+void tensorType::print(AsmPrinter &printer) const {
     printer << "<";
-    for (auto dim : getShape()) {
+    for (int64_t dim : getShape()) {
         if (dim < 0) {
             printer << "?" << "x";
         } else {

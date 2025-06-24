@@ -1,5 +1,6 @@
 // lib/Conversion/SARToLinalg/SARToLinalg.cpp
 
+#include <memory>
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/Casting.h"
@@ -14,12 +15,11 @@
 #include "mlir/IR/TypeRange.h"
 #include "mlir/IR/Value.h"
 #include "mlir/IR/ValueRange.h"
+#include "mlir/Transforms/DialectConversion.h"
 
 #include "Dialect/SAR/IR/SARTypes.h"
 #include "Dialect/SAR/IR/SAROps.h"
 #include "Conversion/SARToLinalg/SARToLinalg.h"
-
-using namespace mlir;
 
 namespace mlir::sar {
 
@@ -27,30 +27,12 @@ namespace mlir::sar {
         typeConverter.addConversion([](tensorType type) {
             return RankedTensorType::get(type.getShape(), type.getElementType());
         });
-
-        typeConverter.addSourceMaterialization(
-            [&](OpBuilder &builder, Type resultType, ValueRange inputs,
-                Location loc) -> std::optional<Value> {
-                if (inputs.size() != 1)
-                    return std::nullopt;
-
-                return builder.create<UnrealizedConversionCastOp>(loc, resultType, inputs)
-                    .getResult(0);
-            });
-        
-        typeConverter.addTargetMaterialization(
-            [&](OpBuilder &builder, Type resultType, ValueRange inputs,
-                Location loc) -> std::optional<Value> {
-                if (inputs.size() != 1)
-                    return std::nullopt;
-
-                return builder.create<UnrealizedConversionCastOp>(loc, resultType, inputs)
-                    .getResult(0);
-            });
     }
 
-    void populateSARToLinalgPatterns(TypeConverter &typeConverter,
-                                     RewritePatternSet &patterns) {
+    void populateSARToLinalgPatterns(TypeConverter &typeConverter, RewritePatternSet &patterns) {
+        patterns.add<
+
+        >(typeConverter, patterns.getContext());
     }
 
 } // namespace mlir::sar

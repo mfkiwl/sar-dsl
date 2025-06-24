@@ -38,7 +38,7 @@ def TensorType : SAR_Type<"tensor", [ShapedTypeInterface],"::mlir::TensorType"> 
 
     let hasCustomAssemblyFormat = 1;
 
-    let skipDefaultBuilders = 0;
+    let skipDefaultBuilders = 1;
 
     let genVerifyDecl = 1;
 
@@ -53,7 +53,7 @@ def TensorType : SAR_Type<"tensor", [ShapedTypeInterface],"::mlir::TensorType"> 
         using ::mlir::ShapedType::Trait<tensorType>::getDynamicDimIndex;
 
         ::mlir::ShapedType cloneWith(::std::optional<::llvm::ArrayRef<int64_t>> shape, 
-                                     ::mlir::Type type) const {
+                                     ::mlir::Type type) {
             if (shape)
                 return mlir::sar::tensorType::get(getContext(), *shape, type);
             return mlir::sar::tensorType::get(getContext(), getShape(), type);

@@ -28,7 +28,7 @@ class SAR_BinaryOp<string mnemonic, Type OperandType, Type resultType = OperandT
         resultType:$result);
 }
 
-def ConstOp : SAR_Op<"const", [Pure, ConstantLike]> {
+def ConstOp : SAR_Op<"const", [Pure]> {
     let arguments = (ins
         ElementsAttr:$value);
     let results = (outs

@@ -6,7 +6,7 @@ add_mlir_dialect_library(MLIRSARDialect
     SAROps.cpp
 
     DEPENDS
-    SARDialectIncGen
+    MLIRSARDialectIncGen
 
     LINK_LIBS PUBLIC
     MLIRIR

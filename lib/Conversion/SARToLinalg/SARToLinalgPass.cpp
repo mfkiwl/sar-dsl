@@ -1,5 +1,6 @@
 // lib/Conversion/SARToLinalg/SARToLinalgPass.cpp
 
+#include <memory>
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/FormatVariadic.h"
@@ -9,6 +10,7 @@
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/Transforms/DialectConversion.h"
 
+#include "Dialect/SAR/IR/SARDialect.h"
 #include "Dialect/SAR/IR/SARTypes.h"
 #include "Dialect/SAR/IR/SAROps.h"
 #include "Conversion/SARToLinalg/SARToLinalg.h"
@@ -26,9 +28,8 @@ using namespace ::mlir;
 using namespace ::mlir::sar;
 
 struct SARToLinalgPassPass
-    : public mlir::sar::impl::ConvertSARToLinalgPassBase<
-          SARToLinalgPassPass> {
-  void runOnOperation() override;
+    : public mlir::sar::impl::ConvertSARToLinalgPassBase<SARToLinalgPassPass> {
+    void runOnOperation() override;
 };
 
 void configSARToLinalgTarget(ConversionTarget& target) {
@@ -38,8 +39,7 @@ void configSARToLinalgTarget(ConversionTarget& target) {
     target.addLegalOp<UnrealizedConversionCastOp>();
     target.addDynamicallyLegalOp<ReturnOp>([](ReturnOp op) {
         for (auto type : op->getOperandTypes()) {
-            if (isa<::mlir::sar::tensorType>(type))
-                return false;
+            if (isa<::mlir::sar::tensorType>(type)) return false;
         }
         return true;
     });
@@ -54,9 +54,7 @@ void SARToLinalgPassPass::runOnOperation() {
     populateSARToLinalgPatterns(type_convert, patterns);
     ConversionTarget target(getContext());
     configSARToLinalgTarget(target);
-    
     if (failed(applyPartialConversion(model, target, std::move(patterns))))
         signalPassFailure();
-    
     LLVM_DEBUG(llvm::dbgs() << llvm::formatv("run out: {0}\n", getPassName()));
 }
