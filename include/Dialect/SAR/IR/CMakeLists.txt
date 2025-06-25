@@ -14,4 +14,4 @@ mlir_tablegen(SAROps.h.inc -gen-op-decls -dialect=sar)
 
 mlir_tablegen(SAROps.cpp.inc -gen-op-defs -dialect=sar)
 
-add_public_tablegen_target(SARDialectIncGen)
+add_public_tablegen_target(MLIRSARDialectIncGen)

@@ -10,7 +10,7 @@
 namespace mlir::sar {
 
 void SARDialect::registerOps() {
-    llvm::outs() << "Register " << getDialectNamespace() << " op\n";
+    // llvm::outs() << "Register " << getDialectNamespace() << " op\n";
     addOperations<
 #define GET_OP_LIST
 #include "Dialect/SAR/IR/SAROps.cpp.inc"

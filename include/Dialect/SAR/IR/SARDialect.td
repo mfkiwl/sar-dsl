@@ -32,7 +32,7 @@ def SAR_Dialect : Dialect {
     let hasRegionArgAttrVerify = 0;
     let hasRegionResultAttrVerify = 0;
     let hasOperationInterfaceFallback = 0;
-    let useDefaultAttributePrinterParser = 1;
+    let useDefaultAttributePrinterParser = 0;
     let useDefaultTypePrinterParser = 1;
     let hasCanonicalizer = 0;
     let isExtensible = 0;

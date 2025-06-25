@@ -7,6 +7,7 @@
 #include "mlir/Dialect/Arith/IR/Arith.h"
 #include "mlir/Dialect/Linalg/IR/Linalg.h"
 #include "mlir/Dialect/Tensor/IR/Tensor.h"
+#include "mlir/Dialect/Func/IR/FuncOps.h"
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -33,11 +34,16 @@ struct SARToLinalgPassPass
 };
 
 void configSARToLinalgTarget(ConversionTarget& target) {
+    target.addLegalDialect<BuiltinDialect>();
+    target.addLegalDialect<func::FuncDialect>();
     target.addLegalDialect<tensor::TensorDialect>();
     target.addLegalDialect<linalg::LinalgDialect>();
     target.addLegalDialect<arith::ArithDialect>();
+    target.addIllegalDialect<mlir::sar::SARDialect>();
+
     target.addLegalOp<UnrealizedConversionCastOp>();
-    target.addDynamicallyLegalOp<ReturnOp>([](ReturnOp op) {
+
+    target.addDynamicallyLegalOp<func::ReturnOp>([](func::ReturnOp op) {
         for (auto type : op->getOperandTypes()) {
             if (isa<::mlir::sar::tensorType>(type)) return false;
         }

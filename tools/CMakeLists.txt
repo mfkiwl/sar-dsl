@@ -22,6 +22,9 @@ set(LIBS
     MLIRSARToLinalg
 )
 
-add_executable(sar-opt sar-opt.cpp)
+add_mlir_tool(sar-opt sar-opt.cpp)
 
-target_link_libraries(sar-opt PRIVATE ${LIBS})
+target_link_libraries(sar-opt
+    PRIVATE
+    ${LIBS}
+)

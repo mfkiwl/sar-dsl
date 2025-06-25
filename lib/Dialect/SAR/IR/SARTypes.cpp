@@ -18,7 +18,7 @@
 namespace mlir::sar {
 
 void SARDialect::registerTypes() {
-    llvm::outs() << "Register " << getDialectNamespace() << " type\n";
+    // llvm::outs() << "Register " << getDialectNamespace() << " type\n";
     addTypes<
 #define GET_TYPEDEF_LIST
 #include "Dialect/SAR/IR/SARTypes.cpp.inc"
@@ -45,11 +45,11 @@ Type tensorType::parse(AsmParser &parser) {
     Type elementType;
     if (parser.parseType(elementType)) 
         return Type();
-    
+
     if (parser.parseGreater()) 
         return Type();
 
-    return parser.getChecked<tensorType>(parser.getContext(), dimensions, elementType);
+    return tensorType::get(parser.getContext(), dimensions, elementType);
 }
 
 void tensorType::print(AsmPrinter &printer) const {
