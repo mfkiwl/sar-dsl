@@ -42,6 +42,14 @@ ninja
 ./test/sar_test
 ```
 
+- Opt
+
+```bash
+ninja sar-opt
+
+./tools/sar-opt ../test/MLIR/test.mlir --convert-sar-to-linalg > ../test/MLIR/output.mlir
+```
+
 - Clean
 
 ```bash

@@ -1,5 +1,5 @@
 /build
-/test/MLIR
+/test/MLIR/output.mlir
 .vscode
 .clangd
 .cache

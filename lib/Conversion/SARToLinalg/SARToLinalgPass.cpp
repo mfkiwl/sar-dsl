@@ -8,6 +8,7 @@
 #include "mlir/Dialect/Linalg/IR/Linalg.h"
 #include "mlir/Dialect/Tensor/IR/Tensor.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
+#include "mlir/Dialect/Func/Transforms/FuncConversions.h"
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -33,21 +34,26 @@ struct SARToLinalgPassPass
     void runOnOperation() override;
 };
 
-void configSARToLinalgTarget(ConversionTarget& target) {
+void configSARToLinalgTarget(TypeConverter &typeConverter, ConversionTarget &target) {
     target.addLegalDialect<BuiltinDialect>();
-    target.addLegalDialect<func::FuncDialect>();
     target.addLegalDialect<tensor::TensorDialect>();
     target.addLegalDialect<linalg::LinalgDialect>();
     target.addLegalDialect<arith::ArithDialect>();
-    target.addIllegalDialect<mlir::sar::SARDialect>();
+
+    target.addIllegalDialect<sar::SARDialect>();
 
     target.addLegalOp<UnrealizedConversionCastOp>();
 
-    target.addDynamicallyLegalOp<func::ReturnOp>([](func::ReturnOp op) {
-        for (auto type : op->getOperandTypes()) {
-            if (isa<::mlir::sar::tensorType>(type)) return false;
-        }
-        return true;
+    target.addDynamicallyLegalOp<func::FuncOp>([&typeConverter](func::FuncOp op) {
+        return typeConverter.isSignatureLegal(op.getFunctionType()) &&
+               llvm::all_of(op.getArgumentTypes(), [&](Type type) { return typeConverter.isLegal(type); }) &&
+               llvm::all_of(op.getResultTypes(), [&](Type type) { return typeConverter.isLegal(type); });
+    });
+
+    target.addDynamicallyLegalOp<func::ReturnOp>([&typeConverter](func::ReturnOp op) {
+        return llvm::all_of(op.getOperandTypes(), [&](Type type) {
+            return typeConverter.isLegal(type);
+        });
     });
 }
 
@@ -59,8 +65,8 @@ void SARToLinalgPassPass::runOnOperation() {
     RewritePatternSet patterns(&getContext());
     populateSARToLinalgPatterns(type_convert, patterns);
     ConversionTarget target(getContext());
-    configSARToLinalgTarget(target);
+    configSARToLinalgTarget(type_convert, target);
     if (failed(applyPartialConversion(model, target, std::move(patterns))))
         signalPassFailure();
-    LLVM_DEBUG(llvm::dbgs() << llvm::formatv("run out: {0}\n", getPassName()));
+    LLVM_DEBUG(llvm::dbgs() << llvm::formatv("run out {0}\n", getPassName()));
 }
