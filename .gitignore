@@ -1,5 +1,5 @@
 /build
-/test
+/test/*
 !/test/CMakeLists.txt
 !/test/test.cpp
 !/test/MLIR/test.mlir
