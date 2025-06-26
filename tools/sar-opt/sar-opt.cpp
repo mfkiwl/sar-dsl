@@ -1,4 +1,4 @@
-// tools/sar-opt.cpp
+// tools/sar-opt/sar-opt.cpp
 
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/InitLLVM.h"
