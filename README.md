@@ -46,7 +46,7 @@ export PATH=$PWD/../externals/llvm-project/build/bin:$PATH
 - Generate mlir
 
 ```bash
-./test/sar-gen > ../test/MLIR/test.mlir
+./test/sar-gen -o ../test/MLIR/test.mlir
 ```
 
 - Pass & Lowering
