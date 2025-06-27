@@ -40,10 +40,4 @@ def SubOp : SAR_BinaryOp<"sub", AnySARTensor>;
 def MulOp : SAR_BinaryOp<"mul", AnySARTensor>;
 def DivOp : SAR_BinaryOp<"div", AnySARTensor>;
 
-def PrintOp: SAR_Op<"print", []> {
-    let arguments = (ins
-        AnyType:$input
-    );
-}
-
 #endif

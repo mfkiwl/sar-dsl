@@ -1,8 +1,7 @@
 /build
 /test/*
 !/test/CMakeLists.txt
-!/test/test.cpp
-!/test/MLIR/test.mlir
+!/test/ir_gen.cpp
 !/test/ir_test.c
 .vscode
 .clangd
