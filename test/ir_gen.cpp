@@ -109,7 +109,19 @@ int main(int argc, char **argv) {
         module.print(llvm::outs(), flags);
         llvm::outs() << "\n";
     } else {
-        // Output to file when -o is specified
+        // -o is specified
+
+        // Make sure the output directory exists
+        std::filesystem::path outputPath(outFile);
+        std::filesystem::path parentDir = outputPath.parent_path();
+        if (!parentDir.empty() && !std::filesystem::exists(parentDir)) {
+            if (!std::filesystem::create_directories(parentDir)) {
+                llvm::errs() << "Failed to create directory: " << parentDir << "\n";
+                return 1;
+            }
+        }
+
+        // Output to file
         std::error_code ec;
         llvm::raw_fd_ostream outputFile(outFile, ec);
         if (ec) {
