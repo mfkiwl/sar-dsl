@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     // Create function
     auto func = builder.create<mlir::func::FuncOp>(
         loc, 
-        "sar_computation",
+        "forward",
         functionType
     );
     auto &entryBlock = *func.addEntryBlock();

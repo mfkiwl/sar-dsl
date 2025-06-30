@@ -2,15 +2,18 @@
 
 The project is currently under development...
 
-## Instructions
+## Getting Started
 
-- List tree
+### Instructions
+
+- Clone repository
 
 ```bash
-tree -I "build" -I "llvm-project"
+git clone https://github.com/zeroherolin/sar-dsl.git
+cd sar-dsl && git submodule update --init --recursive
 ```
 
-- Build LLVM & MLIR
+- Build MLIR
 
 ```bash
 cd externals/llvm-project
@@ -18,29 +21,65 @@ mkdir build && cd build
 cmake -G Ninja ../llvm \
     -DLLVM_ENABLE_PROJECTS="mlir;clang" \
     -DLLVM_BUILD_EXAMPLES=OFF \
-    -DLLVM_TARGETS_TO_BUILD="X86" \
+    -DLLVM_TARGETS_TO_BUILD="host" \
     -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_ENABLE_ASSERTIONS=ON \
-    -DLLVM_INSTALL_UTILS=ON
+    -DLLVM_USE_LINKER=lld \
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_CXX_COMPILER=clang++
+
+ninja
+```
+
+- Build ScaleHLS
+
+Duplicated MLIR is built here cuz' ScaleHLS depends on the old version.
+
+```bash
+cd ../../ScaleHLS-HIDA/polygeist/llvm-project
+mkdir build && cd build
+cmake -G Ninja ../llvm \
+    -DLLVM_ENABLE_PROJECTS="mlir" \
+    -DLLVM_BUILD_EXAMPLES=OFF \
+    -DLLVM_TARGETS_TO_BUILD="host" \
+    -DCMAKE_BUILD_TYPE=DEBUG \
+    -DLLVM_ENABLE_ASSERTIONS=ON \
+    -DLLVM_USE_LINKER=lld \
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_CXX_COMPILER=clang++
 
 ninja
 
 cd ../../..
+# edit externals/ScaleHLS-HIDA/CMakeLists.txt and add the following: 
+set(LLVM_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/polygeist/llvm-project/build")
+set(LLVM_DIR "${LLVM_BUILD_DIR}/lib/cmake/llvm")
+set(MLIR_DIR "${LLVM_BUILD_DIR}/lib/cmake/mlir")
+
+mkdir build && cd build
+cmake -G Ninja .. \
+    -DLLVM_USE_LINKER=lld \
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_CXX_COMPILER=clang++
+
+ninja scalehls-opt scalehls-translate
 ```
 
-- Compile
+- Build SAR-DSL
 
 ```bash
+cd ../../.. # sar-dsl/
 mkdir build && cd build
 cmake -G Ninja ..
 ninja
 ```
 
-- Set path
+- Set env path
 
 ```bash
 export PATH=$PWD/bin:$PATH
 export PATH=$PWD/../externals/llvm-project/build/bin:$PATH
+export PATH=$PWD/../externals/ScaleHLS-HIDA/build/bin:$PATH
 ```
 
 - Generate mlir
@@ -75,8 +114,10 @@ clang ../test/ir_test.o ../test/output.o -o ../test/ir_test
 ../test/ir_test
 ```
 
-- Clean
+- Test emitHLS
 
 ```bash
-cd .. && rm -rf build && mkdir build && cd build && clear
+scalehls-opt ../test/MLIR/output.mlir \
+    -hida-pytorch-pipeline="top-func=forward loop-tile-size=8 loop-unroll-factor=4" \
+    | scalehls-translate -scalehls-emit-hlscpp -emit-vitis-directives > ../test/emitHLS.cpp
 ```
