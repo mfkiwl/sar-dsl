@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
     // Define 3x3x3 tensor type
     auto f32 = builder.getF32Type();
     mlir::SmallVector<int64_t> shape = {3, 3, 3};
-    auto tensor_type = mlir::sar::tensorType::get(&context, shape, f32);
+    auto tensor_type = mlir::sar::TensorType::get(&context, shape, f32);
 
     // Create function type: (tensor, tensor) -> tensor
     auto functionType = builder.getFunctionType(

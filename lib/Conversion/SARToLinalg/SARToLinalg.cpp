@@ -216,7 +216,7 @@ namespace mlir::sar {
 void initSARToLinalgTypeConvert(TypeConverter &typeConverter) {
 
     // Convert SAR tensor types to standard ranked tensors
-    typeConverter.addConversion([](mlir::sar::tensorType type) -> Type {
+    typeConverter.addConversion([](mlir::sar::TensorType type) -> Type {
         return RankedTensorType::get(type.getShape(), type.getElementType());
     });
 

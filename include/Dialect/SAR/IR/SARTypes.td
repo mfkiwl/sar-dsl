@@ -10,13 +10,13 @@ include "mlir/IR/BuiltinTypeInterfaces.td"
 
 include "Dialect/SAR/IR/SARDialect.td"
 
-class SAR_Type<string typeMnemonic, list<Trait> traits = [], string baseCppClass = "::mlir::Type">
-        : TypeDef<SAR_Dialect, typeMnemonic, traits, baseCppClass> {
+class SAR_Type<string name, string typeMnemonic, list<Trait> traits = [], string baseCppClass = "::mlir::Type">
+        : TypeDef<SAR_Dialect, name, traits, baseCppClass> {
     let mnemonic = typeMnemonic;
     let typeName = dialect.name # "." # typeMnemonic;
 }
 
-def TensorType : SAR_Type<"tensor", [ShapedTypeInterface],"::mlir::TensorType"> {
+def SAR_TensorType : SAR_Type<"Tensor", "tensor", [ShapedTypeInterface],"::mlir::TensorType"> {
     let summary = "SAR tensor type";
     let description = "A specialized tensor type in SAR dialect";
 
@@ -43,20 +43,20 @@ def TensorType : SAR_Type<"tensor", [ShapedTypeInterface],"::mlir::TensorType"> 
     let genVerifyDecl = 1;
 
     let extraClassDeclaration = [{
-        using ::mlir::ShapedType::Trait<tensorType>::getElementTypeBitWidth;
-        using ::mlir::ShapedType::Trait<tensorType>::getRank;
-        using ::mlir::ShapedType::Trait<tensorType>::getNumElements;
-        using ::mlir::ShapedType::Trait<tensorType>::isDynamicDim;
-        using ::mlir::ShapedType::Trait<tensorType>::hasStaticShape;
-        using ::mlir::ShapedType::Trait<tensorType>::getNumDynamicDims;
-        using ::mlir::ShapedType::Trait<tensorType>::getDimSize;
-        using ::mlir::ShapedType::Trait<tensorType>::getDynamicDimIndex;
+        using ::mlir::ShapedType::Trait<TensorType>::getElementTypeBitWidth;
+        using ::mlir::ShapedType::Trait<TensorType>::getRank;
+        using ::mlir::ShapedType::Trait<TensorType>::getNumElements;
+        using ::mlir::ShapedType::Trait<TensorType>::isDynamicDim;
+        using ::mlir::ShapedType::Trait<TensorType>::hasStaticShape;
+        using ::mlir::ShapedType::Trait<TensorType>::getNumDynamicDims;
+        using ::mlir::ShapedType::Trait<TensorType>::getDimSize;
+        using ::mlir::ShapedType::Trait<TensorType>::getDynamicDimIndex;
 
         ::mlir::ShapedType cloneWith(::std::optional<::llvm::ArrayRef<int64_t>> shape, 
                                      ::mlir::Type type) {
             if (shape)
-                return mlir::sar::tensorType::get(getContext(), *shape, type);
-            return mlir::sar::tensorType::get(getContext(), getShape(), type);
+                return mlir::sar::TensorType::get(getContext(), *shape, type);
+            return mlir::sar::TensorType::get(getContext(), getShape(), type);
         }
     }];
 }

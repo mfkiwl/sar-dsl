@@ -13,7 +13,7 @@ typedef struct {
 } MemRef3D;
 
 // Declare LLVM function for 3D tensors
-extern MemRef3D sar_computation(
+extern MemRef3D forward(
     float* a_alloc, float* a_align, long a_offset, 
     long a_size0, long a_size1, long a_size2, 
     long a_stride0, long a_stride1, long a_stride2,
@@ -50,7 +50,7 @@ int main() {
     };
     
     // Call LLVM function
-    MemRef3D result = sar_computation(
+    MemRef3D result = forward(
         input1.allocated, input1.aligned, input1.offset,
         input1.sizes[0], input1.sizes[1], input1.sizes[2],
         input1.strides[0], input1.strides[1], input1.strides[2],

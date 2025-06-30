@@ -25,7 +25,7 @@ void SARDialect::registerTypes() {
     >();
 }
 
-::llvm::LogicalResult tensorType::verify(
+::llvm::LogicalResult TensorType::verify(
     ::llvm::function_ref<::mlir::InFlightDiagnostic()> emitError,
     ::llvm::ArrayRef<int64_t> shape, Type elementType) {
     if (!elementType.isIntOrFloat()) {
@@ -34,7 +34,7 @@ void SARDialect::registerTypes() {
     return ::mlir::success();
 }
 
-Type tensorType::parse(AsmParser &parser) {
+Type TensorType::parse(AsmParser &parser) {
     if (parser.parseLess()) 
         return Type();
 
@@ -49,10 +49,10 @@ Type tensorType::parse(AsmParser &parser) {
     if (parser.parseGreater()) 
         return Type();
 
-    return tensorType::get(parser.getContext(), dimensions, elementType);
+    return TensorType::get(parser.getContext(), dimensions, elementType);
 }
 
-void tensorType::print(AsmPrinter &printer) const {
+void TensorType::print(AsmPrinter &printer) const {
     printer << "<";
     for (int64_t dim : getShape()) {
         if (dim < 0) {
