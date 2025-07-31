@@ -18,7 +18,7 @@ class SAR_Op<string mnemonic, list<Trait> traits = []>
 }
 
 class SAR_BinaryOp<string mnemonic, Type OperandType, Type resultType = OperandType, list<Trait> traits = [Pure], dag attributes = (ins)>
-    : SAR_Op<mnemonic, traits#[]> {
+    : SAR_Op<mnemonic, traits # []> {
     let arguments = !con((ins
         OperandType:$lhs,
         OperandType:$rhs),
@@ -26,6 +26,18 @@ class SAR_BinaryOp<string mnemonic, Type OperandType, Type resultType = OperandT
     );
     let results = (outs
         resultType:$result);
+    let hasVerifier = 1;
+}
+
+class SAR_UnaryOp<string mnemonic, Type operandType, Type resultType = operandType, list<Trait> traits = [Pure], dag attributes = (ins)>
+    : SAR_Op<mnemonic, traits # []> {
+    let arguments = !con((ins
+        operandType:$input),
+        attributes
+    );
+    let results = (outs
+        resultType:$result);
+    let hasVerifier = 1;
 }
 
 def ConstOp : SAR_Op<"const", [Pure]> {
@@ -39,5 +51,9 @@ def AddOp : SAR_BinaryOp<"add", AnySARTensor>;
 def SubOp : SAR_BinaryOp<"sub", AnySARTensor>;
 def MulOp : SAR_BinaryOp<"mul", AnySARTensor>;
 def DivOp : SAR_BinaryOp<"div", AnySARTensor>;
+
+def FFT1dOp : SAR_UnaryOp<"fft1d", AnySARVector>;
+def FFT2d0Op : SAR_UnaryOp<"fft2d0", AnySARMatrix>;
+def FFT2d1Op : SAR_UnaryOp<"fft2d1", AnySARMatrix>;
 
 #endif

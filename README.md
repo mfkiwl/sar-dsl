@@ -68,7 +68,7 @@ ninja scalehls-opt scalehls-translate
 - Build SAR-DSL
 
 ```bash
-cd ../../.. # sar-dsl/
+cd ../../..  # sar-dsl/
 mkdir build && cd build
 cmake -G Ninja ..
 ninja
@@ -86,6 +86,8 @@ export PATH=$PWD/../externals/ScaleHLS-HIDA/build/bin:$PATH
 
 ```bash
 ./test/sar-gen -o ../test/MLIR/test.mlir
+
+# ./test/test_gen_fft -o ../test/MLIR/test_gen_fft.mlir
 ```
 
 - Pass & Lowering

@@ -2,7 +2,10 @@
 /test/*
 !/test/CMakeLists.txt
 !/test/ir_gen.cpp
+!/test/test_shape_mismatch.cpp
+!/test/test_gen_fft.cpp
 !/test/ir_test.c
 .vscode
 .clangd
 .cache
+.cursorignore

@@ -61,4 +61,94 @@ def SAR_TensorType : SAR_Type<"Tensor", "tensor", [ShapedTypeInterface],"::mlir:
     }];
 }
 
+def SAR_MatrixType : SAR_Type<"Matrix", "matrix", [ShapedTypeInterface], "::mlir::TensorType"> {
+    let summary = "SAR matrix type";
+    let description = "A specialized matrix type in SAR dialect";
+
+    let parameters = (ins
+        ArrayRefParameter<"int64_t">:$shape,
+        "Type":$elementType
+    );
+
+    let genStorageClass = 1;
+    let hasStorageCustomConstructor = 0;
+
+    let builders = [
+        TypeBuilder<(ins 
+                "::mlir::ArrayRef<int64_t>":$shape,
+                "::mlir::Type":$elementType), [{
+            return $_get(elementType.getContext(), shape, elementType);
+        }]>
+    ];
+
+    let hasCustomAssemblyFormat = 1;
+
+    let skipDefaultBuilders = 1;
+
+    let genVerifyDecl = 1;
+
+    let extraClassDeclaration = [{
+        using ::mlir::ShapedType::Trait<MatrixType>::getElementTypeBitWidth;
+        using ::mlir::ShapedType::Trait<MatrixType>::getRank;
+        using ::mlir::ShapedType::Trait<MatrixType>::getNumElements;
+        using ::mlir::ShapedType::Trait<MatrixType>::isDynamicDim;
+        using ::mlir::ShapedType::Trait<MatrixType>::hasStaticShape;
+        using ::mlir::ShapedType::Trait<MatrixType>::getNumDynamicDims;
+        using ::mlir::ShapedType::Trait<MatrixType>::getDimSize;
+        using ::mlir::ShapedType::Trait<MatrixType>::getDynamicDimIndex;
+
+        ::mlir::ShapedType cloneWith(::std::optional<::llvm::ArrayRef<int64_t>> shape, 
+                                 ::mlir::Type type) {
+            if (shape)
+                return mlir::sar::MatrixType::get(getContext(), *shape, type);
+            return mlir::sar::MatrixType::get(getContext(), getShape(), type);
+        }
+    }];
+}
+
+def SAR_VectorType : SAR_Type<"Vector", "vector", [ShapedTypeInterface], "::mlir::TensorType"> {
+    let summary = "SAR vector type";
+    let description = "A specialized vector type in SAR dialect";
+
+    let parameters = (ins
+        ArrayRefParameter<"int64_t">:$shape,
+        "Type":$elementType
+    );
+
+    let genStorageClass = 1;
+    let hasStorageCustomConstructor = 0;
+
+    let builders = [
+        TypeBuilder<(ins 
+                "::mlir::ArrayRef<int64_t>":$shape,
+                "::mlir::Type":$elementType), [{
+            return $_get(elementType.getContext(), shape, elementType);
+        }]>
+    ];
+
+    let hasCustomAssemblyFormat = 1;
+
+    let skipDefaultBuilders = 1;
+
+    let genVerifyDecl = 1;
+
+    let extraClassDeclaration = [{
+        using ::mlir::ShapedType::Trait<VectorType>::getElementTypeBitWidth;
+        using ::mlir::ShapedType::Trait<VectorType>::getRank;
+        using ::mlir::ShapedType::Trait<VectorType>::getNumElements;
+        using ::mlir::ShapedType::Trait<VectorType>::isDynamicDim;
+        using ::mlir::ShapedType::Trait<VectorType>::hasStaticShape;
+        using ::mlir::ShapedType::Trait<VectorType>::getNumDynamicDims;
+        using ::mlir::ShapedType::Trait<VectorType>::getDimSize;
+        using ::mlir::ShapedType::Trait<VectorType>::getDynamicDimIndex;
+
+        ::mlir::ShapedType cloneWith(::std::optional<::llvm::ArrayRef<int64_t>> shape, 
+                                     ::mlir::Type type) {
+            if (shape)
+                return mlir::sar::VectorType::get(getContext(), *shape, type);
+            return mlir::sar::VectorType::get(getContext(), getShape(), type);
+        }
+    }];
+}
+
 #endif
