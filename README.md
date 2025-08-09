@@ -84,21 +84,21 @@ export PATH=$PWD/../externals/llvm-project/build/bin:$PATH && \
 export PATH=$PWD/../externals/ScaleHLS-HIDA/build/bin:$PATH
 ```
 
-- Generate mlir
+- Test generate mlir
 
 ```bash
-./test/sar-gen -o ../test/MLIR/test_sar_tensor.mlir
-
-./test/test_gen_fft -o ../test/MLIR/test_gen_fft.mlir
+./test/test-gen-elem -o ../test/MLIR/test_gen_elem.mlir
+./test/test-gen-fft -o ../test/MLIR/test_gen_fft.mlir
+./test/test-shape-mismatch
 ```
 
 - Lowering to LLVM
 
 ```bash
-sar-opt ../test/MLIR/test_sar_tensor.mlir --convert-sar-to-linalg \
-    > ../test/MLIR/test_sar_tensor_output.mlir
+sar-opt ../test/MLIR/test_gen_elem.mlir --convert-sar-to-linalg \
+    > ../test/MLIR/test_gen_elem_output.mlir
 
-mlir-opt ../test/MLIR/test_sar_tensor_output.mlir \
+mlir-opt ../test/MLIR/test_gen_elem_output.mlir \
     --one-shot-bufferize="bufferize-function-boundaries" \
     --convert-linalg-to-loops \
     --convert-scf-to-cf \
@@ -132,7 +132,7 @@ scalehls-opt ../test/test-scalehls-hida/affine_matmul.mlir \
 - Test emit SAR to HLS
 
 ```bash
-scalehls-opt ../test/MLIR/test_sar_tensor_output.mlir \
+scalehls-opt ../test/MLIR/test_gen_elem_output.mlir \
     -hida-pytorch-pipeline="top-func=forward loop-tile-size=8 loop-unroll-factor=4" \
     | scalehls-translate \
     -scalehls-emit-hlscpp -emit-vitis-directives \

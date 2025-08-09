@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     auto loc = builder.getUnknownLoc();
 
     // Create module
-    auto module = builder.create<mlir::ModuleOp>(loc, "sar_module");
+    auto module = builder.create<mlir::ModuleOp>(loc, "sar_elem_module");
     builder.setInsertionPointToStart(module.getBody());
 
     // Define 3x3x3 tensor type

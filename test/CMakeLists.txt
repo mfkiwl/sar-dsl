@@ -1,8 +1,8 @@
 # test/CMakeLists.txt
 
-add_executable(sar-gen ir_gen.cpp)
+add_executable(test-gen-elem test_gen_elem.cpp)
 
-target_link_libraries(sar-gen PRIVATE
+target_link_libraries(test-gen-elem PRIVATE
     MLIRIR
     MLIRSARDialect
     MLIRFuncDialect
@@ -12,9 +12,9 @@ target_link_libraries(sar-gen PRIVATE
     MLIRPass
 )
 
-add_executable(test_shape_mismatch test_shape_mismatch.cpp)
+add_executable(test-shape-mismatch test_shape_mismatch.cpp)
 
-target_link_libraries(test_shape_mismatch PRIVATE
+target_link_libraries(test-shape-mismatch PRIVATE
     MLIRIR
     MLIRSARDialect
     MLIRFuncDialect
@@ -24,21 +24,9 @@ target_link_libraries(test_shape_mismatch PRIVATE
     MLIRPass
 )
 
-add_executable(test_gen_fft test_gen_fft.cpp)
+add_executable(test-gen-fft test_gen_fft.cpp)
 
-target_link_libraries(test_gen_fft PRIVATE
-    MLIRIR
-    MLIRSARDialect
-    MLIRFuncDialect
-    MLIRSCFDialect
-    MLIRLinalgDialect
-    MLIRParser
-    MLIRPass
-)
-
-add_executable(test_gen_fft_simple test_gen_fft_simple.cpp)
-
-target_link_libraries(test_gen_fft_simple PRIVATE
+target_link_libraries(test-gen-fft PRIVATE
     MLIRIR
     MLIRSARDialect
     MLIRFuncDialect
