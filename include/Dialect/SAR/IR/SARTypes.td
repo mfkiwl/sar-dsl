@@ -61,7 +61,7 @@ def SAR_TensorType : SAR_Type<"Tensor", "tensor", [ShapedTypeInterface],"::mlir:
     }];
 }
 
-def SAR_MatrixType : SAR_Type<"Matrix", "matrix", [ShapedTypeInterface], "::mlir::TensorType"> {
+def SAR_MatrixType : SAR_Type<"Matrix", "matrix", [ShapedTypeInterface], "::mlir::sar::TensorType"> {
     let summary = "SAR matrix type";
     let description = "A specialized matrix type in SAR dialect";
 
@@ -106,7 +106,7 @@ def SAR_MatrixType : SAR_Type<"Matrix", "matrix", [ShapedTypeInterface], "::mlir
     }];
 }
 
-def SAR_VectorType : SAR_Type<"Vector", "vector", [ShapedTypeInterface], "::mlir::TensorType"> {
+def SAR_VectorType : SAR_Type<"Vector", "vector", [ShapedTypeInterface], "::mlir::sar::TensorType"> {
     let summary = "SAR vector type";
     let description = "A specialized vector type in SAR dialect";
 

@@ -99,23 +99,23 @@ struct BinaryOpConverterPattern final : public OpConversionPattern<SarOp> {
                 Type elemType = args[0].getType();
 
                 if (elemType.isFloat()) {
-                    if (std::is_same<SarOp, sar::AddOp>::value) {
+                    if (std::is_same<SarOp, sar::ElemAddOp>::value) {
                         result = b.create<arith::AddFOp>(loc, args[0], args[1]);
-                    } else if (std::is_same<SarOp, sar::SubOp>::value) {
+                    } else if (std::is_same<SarOp, sar::ElemSubOp>::value) {
                         result = b.create<arith::SubFOp>(loc, args[0], args[1]);
-                    } else if (std::is_same<SarOp, sar::MulOp>::value) {
+                    } else if (std::is_same<SarOp, sar::ElemMulOp>::value) {
                         result = b.create<arith::MulFOp>(loc, args[0], args[1]);
-                    } else if (std::is_same<SarOp, sar::DivOp>::value) {
+                    } else if (std::is_same<SarOp, sar::ElemDivOp>::value) {
                         result = b.create<arith::DivFOp>(loc, args[0], args[1]);
                     }
                 } else if (elemType.isInteger()) {
-                    if (std::is_same<SarOp, sar::AddOp>::value) {
+                    if (std::is_same<SarOp, sar::ElemAddOp>::value) {
                         result = b.create<arith::AddIOp>(loc, args[0], args[1]);
-                    } else if (std::is_same<SarOp, sar::SubOp>::value) {
+                    } else if (std::is_same<SarOp, sar::ElemSubOp>::value) {
                         result = b.create<arith::SubIOp>(loc, args[0], args[1]);
-                    } else if (std::is_same<SarOp, sar::MulOp>::value) {
+                    } else if (std::is_same<SarOp, sar::ElemMulOp>::value) {
                         result = b.create<arith::MulIOp>(loc, args[0], args[1]);
-                    } else if (std::is_same<SarOp, sar::DivOp>::value) {
+                    } else if (std::is_same<SarOp, sar::ElemDivOp>::value) {
                         result = b.create<arith::DivSIOp>(loc, args[0], args[1]);
                     }
                 }
@@ -228,10 +228,10 @@ void initSARToLinalgTypeConvert(TypeConverter &typeConverter) {
 void populateSARToLinalgPatterns(TypeConverter &typeConverter, RewritePatternSet &patterns) {
     patterns.add<
         ConstOpConverterPattern,
-        BinaryOpConverterPattern<mlir::sar::AddOp>,
-        BinaryOpConverterPattern<mlir::sar::SubOp>,
-        BinaryOpConverterPattern<mlir::sar::MulOp>,
-        BinaryOpConverterPattern<mlir::sar::DivOp>,
+        BinaryOpConverterPattern<mlir::sar::ElemAddOp>,
+        BinaryOpConverterPattern<mlir::sar::ElemSubOp>,
+        BinaryOpConverterPattern<mlir::sar::ElemMulOp>,
+        BinaryOpConverterPattern<mlir::sar::ElemDivOp>,
         FuncSignatureConversion,
         ReturnOpConverter
     >(typeConverter, patterns.getContext());

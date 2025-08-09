@@ -51,10 +51,12 @@ cmake -G Ninja ../llvm \
 ninja
 
 cd ../../..
-# edit externals/ScaleHLS-HIDA/CMakeLists.txt and add the following: 
-set(LLVM_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/polygeist/llvm-project/build")
-set(LLVM_DIR "${LLVM_BUILD_DIR}/lib/cmake/llvm")
-set(MLIR_DIR "${LLVM_BUILD_DIR}/lib/cmake/mlir")
+
+sed -i '18 a\
+set(LLVM_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/polygeist/llvm-project/build")\
+set(LLVM_DIR "${LLVM_BUILD_DIR}/lib/cmake/llvm")\
+set(MLIR_DIR "${LLVM_BUILD_DIR}/lib/cmake/mlir")\
+' ./CMakeLists.txt
 
 mkdir build && cd build
 cmake -G Ninja .. \
@@ -77,25 +79,26 @@ ninja
 - Set env path
 
 ```bash
-export PATH=$PWD/bin:$PATH
-export PATH=$PWD/../externals/llvm-project/build/bin:$PATH
+export PATH=$PWD/bin:$PATH && \
+export PATH=$PWD/../externals/llvm-project/build/bin:$PATH && \
 export PATH=$PWD/../externals/ScaleHLS-HIDA/build/bin:$PATH
 ```
 
 - Generate mlir
 
 ```bash
-./test/sar-gen -o ../test/MLIR/test.mlir
+./test/sar-gen -o ../test/MLIR/test_sar_tensor.mlir
 
-# ./test/test_gen_fft -o ../test/MLIR/test_gen_fft.mlir
+./test/test_gen_fft -o ../test/MLIR/test_gen_fft.mlir
 ```
 
-- Pass & Lowering
+- Lowering to LLVM
 
 ```bash
-sar-opt ../test/MLIR/test.mlir --convert-sar-to-linalg > ../test/MLIR/output.mlir
+sar-opt ../test/MLIR/test_sar_tensor.mlir --convert-sar-to-linalg \
+    > ../test/MLIR/test_sar_tensor_output.mlir
 
-mlir-opt ../test/MLIR/output.mlir \
+mlir-opt ../test/MLIR/test_sar_tensor_output.mlir \
     --one-shot-bufferize="bufferize-function-boundaries" \
     --convert-linalg-to-loops \
     --convert-scf-to-cf \
@@ -104,22 +107,34 @@ mlir-opt ../test/MLIR/output.mlir \
     --convert-func-to-llvm \
     --convert-cf-to-llvm \
     --reconcile-unrealized-casts \
-    | mlir-translate --mlir-to-llvmir > ../test/MLIR/output.ll
+    | mlir-translate --mlir-to-llvmir > ../test/output.ll
 ```
 
-- Test output
+- Test LLVM output
 
 ```bash
-clang -c ../test/MLIR/output.ll -o ../test/output.o -Wno-override-module
+clang -c ../test/output.ll -o ../test/output.o -Wno-override-module
 clang -c ../test/ir_test.c -o ../test/ir_test.o
 clang ../test/ir_test.o ../test/output.o -o ../test/ir_test
 ../test/ir_test
 ```
 
-- Test emitHLS
+- Test ScaleHLS-HIDA
 
 ```bash
-scalehls-opt ../test/MLIR/output.mlir \
+scalehls-opt ../test/test-scalehls-hida/affine_matmul.mlir \
+    -hida-pytorch-pipeline="top-func=affine_matmul" \
+    | scalehls-translate \
+    -scalehls-emit-hlscpp -emit-vitis-directives \
+    > ../test/emitHLS/hls_affine_matmul.cpp
+```
+
+- Test emit SAR to HLS
+
+```bash
+scalehls-opt ../test/MLIR/test_sar_tensor_output.mlir \
     -hida-pytorch-pipeline="top-func=forward loop-tile-size=8 loop-unroll-factor=4" \
-    | scalehls-translate -scalehls-emit-hlscpp -emit-vitis-directives > ../test/emitHLS.cpp
+    | scalehls-translate \
+    -scalehls-emit-hlscpp -emit-vitis-directives \
+    > ../test/emitHLS/hls_output.cpp
 ```

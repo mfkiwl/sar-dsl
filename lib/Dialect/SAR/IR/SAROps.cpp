@@ -64,32 +64,98 @@ static LogicalResult verifyUnaryOpShapes(Operation *op) {
     return success();
 }
 
-LogicalResult AddOp::verify() {
+LogicalResult ElemAddOp::verify() {
     return verifyBinaryOpShapes(getOperation());
 }
 
-LogicalResult SubOp::verify() {
+LogicalResult ElemSubOp::verify() {
     return verifyBinaryOpShapes(getOperation());
 }
 
-LogicalResult MulOp::verify() {
+LogicalResult ElemMulOp::verify() {
     return verifyBinaryOpShapes(getOperation());
 }
 
-LogicalResult DivOp::verify() {
+LogicalResult ElemDivOp::verify() {
     return verifyBinaryOpShapes(getOperation());
 }
 
-LogicalResult FFT1dOp::verify() {
+LogicalResult FFTnDimOp::verify() {
     return verifyUnaryOpShapes(getOperation());
 }
 
-LogicalResult FFT2d0Op::verify() {
+LogicalResult IFFTnDimOp::verify() {
     return verifyUnaryOpShapes(getOperation());
 }
 
-LogicalResult FFT2d1Op::verify() {
-    return verifyUnaryOpShapes(getOperation());
+LogicalResult FFTDimxOp::verify() {
+    if (failed(verifyUnaryOpShapes(getOperation())))
+        return failure();
+    auto inputType = llvm::dyn_cast<mlir::ShapedType>(getInput().getType());
+    if (!inputType)
+        return emitOpError("expected shaped type for input");
+    auto dimAttr = getDimAttr();
+    if (!dimAttr)
+        return emitOpError("missing dim attribute");
+    int64_t d = dimAttr.getInt();
+    if (d < 0 || d > 2)
+        return emitOpError("dim must be one of {0,1,2}");
+    if (d >= inputType.getRank())
+        return emitOpError("dim must be less than input rank");
+    return success();
+}
+
+LogicalResult IFFTDimxOp::verify() {
+    if (failed(verifyUnaryOpShapes(getOperation())))
+        return failure();
+    auto inputType = llvm::dyn_cast<mlir::ShapedType>(getInput().getType());
+    if (!inputType)
+        return emitOpError("expected shaped type for input");
+    auto dimAttr = getDimAttr();
+    if (!dimAttr)
+        return emitOpError("missing dim attribute");
+    int64_t d = dimAttr.getInt();
+    if (d < 0 || d > 2)
+        return emitOpError("dim must be one of {0,1,2}");
+    if (d >= inputType.getRank())
+        return emitOpError("dim must be less than input rank");
+    return success();
+}
+
+LogicalResult VecMatMulBrdcstOp::verify() {
+    auto vecType = llvm::dyn_cast<mlir::sar::VectorType>(getLhs().getType());
+    if (!vecType)
+        return emitOpError("expected SAR vector type for lhs");
+    auto matType = llvm::dyn_cast<mlir::sar::MatrixType>(getRhs().getType());
+    if (!matType)
+        return emitOpError("expected SAR matrix type for rhs");
+    auto resType = llvm::dyn_cast<mlir::sar::MatrixType>(getResult().getType());
+    if (!resType)
+        return emitOpError("expected SAR matrix type for result");
+
+    auto dimAttr = getDimAttr();
+    if (!dimAttr)
+        return emitOpError("missing dim attribute");
+    int64_t d = dimAttr.getInt();
+    if (d != 0 && d != 1)
+        return emitOpError("dim must be 0 or 1");
+
+    auto matShape = matType.getShape();
+    auto resShape = resType.getShape();
+    if (matShape != resShape)
+        return emitOpError("result shape must equal matrix shape");
+
+    int64_t vecLen = vecType.getShape().front();
+    if (vecLen < 0)
+        return emitOpError("vector length must be static for verification");
+    if (matShape[d] != vecLen)
+        return emitOpError("vector length must match matrix dimension along 'dim'");
+
+    if (vecType.getElementType() != matType.getElementType() ||
+        vecType.getElementType() != resType.getElementType())
+        return emitOpError("element types of vec, mat, result must be equal");
+
+    return success();
 }
 
 } // namespace mlir::sar

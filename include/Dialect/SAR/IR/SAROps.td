@@ -17,43 +17,55 @@ class SAR_Op<string mnemonic, list<Trait> traits = []>
     : Op<SAR_Dialect, mnemonic, traits> {
 }
 
-class SAR_BinaryOp<string mnemonic, Type OperandType, Type resultType = OperandType, list<Trait> traits = [Pure], dag attributes = (ins)>
+class SAR_BinaryOp<string mnemonic,
+                   Type lhsType,
+                   Type rhsType,
+                   Type resultType,
+                   list<Trait> traits = [Pure],
+                   dag attributes = (ins)>
     : SAR_Op<mnemonic, traits # []> {
     let arguments = !con((ins
-        OperandType:$lhs,
-        OperandType:$rhs),
-        attributes
-    );
+        lhsType:$lhs,
+        rhsType:$rhs),
+        attributes);
     let results = (outs
         resultType:$result);
-    let hasVerifier = 1;
 }
 
-class SAR_UnaryOp<string mnemonic, Type operandType, Type resultType = operandType, list<Trait> traits = [Pure], dag attributes = (ins)>
+class SAR_UnaryOp<string mnemonic,
+                   Type operandType,
+                   Type resultType,
+                   list<Trait> traits = [Pure],
+                   dag attributes = (ins)>
     : SAR_Op<mnemonic, traits # []> {
     let arguments = !con((ins
         operandType:$input),
-        attributes
-    );
+        attributes);
     let results = (outs
         resultType:$result);
-    let hasVerifier = 1;
 }
 
 def ConstOp : SAR_Op<"const", [Pure]> {
-    let arguments = (ins
-        ElementsAttr:$value);
-    let results = (outs
-        AnySARTensor:$result);
+    let arguments = (ins ElementsAttr:$value);
+    let results = (outs AnySARTensor:$result);
 }
 
-def AddOp : SAR_BinaryOp<"add", AnySARTensor>;
-def SubOp : SAR_BinaryOp<"sub", AnySARTensor>;
-def MulOp : SAR_BinaryOp<"mul", AnySARTensor>;
-def DivOp : SAR_BinaryOp<"div", AnySARTensor>;
+def ElemAddOp : SAR_BinaryOp<"elem_add", AnySARTensor, AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
+def ElemSubOp : SAR_BinaryOp<"elem_sub", AnySARTensor, AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
+def ElemMulOp : SAR_BinaryOp<"elem_mul", AnySARTensor, AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
+def ElemDivOp : SAR_BinaryOp<"elem_div", AnySARTensor, AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
 
-def FFT1dOp : SAR_UnaryOp<"fft1d", AnySARVector>;
-def FFT2d0Op : SAR_UnaryOp<"fft2d0", AnySARMatrix>;
-def FFT2d1Op : SAR_UnaryOp<"fft2d1", AnySARMatrix>;
+def FFTnDimOp  : SAR_UnaryOp<"fft_ndim",  AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
+def IFFTnDimOp : SAR_UnaryOp<"ifft_ndim", AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
+
+def FFTDimxOp  : SAR_UnaryOp<"fft_dimx",  AnySARTensor, AnySARTensor, [Pure], (ins I64Attr:$dim)> { let hasVerifier = 1; }
+def IFFTDimxOp : SAR_UnaryOp<"ifft_dimx", AnySARTensor, AnySARTensor, [Pure], (ins I64Attr:$dim)> { let hasVerifier = 1; }
+
+def VecMatMulBrdcstOp
+    : SAR_BinaryOp<"vec_mat_mul_brdcst",
+                    AnySARVector, AnySARMatrix, AnySARMatrix,
+                    [Pure], (ins I64Attr:$dim)> {
+    let hasVerifier = 1;
+}
 
 #endif

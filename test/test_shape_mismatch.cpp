@@ -13,10 +13,10 @@
 int main() {
     mlir::DialectRegistry registry;
     registry.insert<mlir::func::FuncDialect>();
+    registry.insert<mlir::sar::SARDialect>();
     mlir::MLIRContext context(registry);
-
-    context.loadDialect<mlir::sar::SARDialect>();
     context.loadDialect<mlir::func::FuncDialect>();
+    context.loadDialect<mlir::sar::SARDialect>();
 
     mlir::OpBuilder builder(&context);
     auto loc = builder.getUnknownLoc();
@@ -37,7 +37,7 @@ int main() {
     auto arg0 = block.getArgument(0);
     auto arg1 = block.getArgument(1);
 
-    auto add = builder.create<mlir::sar::AddOp>(loc, tensor2, arg0, arg1);
+    auto add = builder.create<mlir::sar::ElemAddOp>(loc, tensor2, arg0, arg1);
 
     builder.create<mlir::func::ReturnOp>(loc, add.getResult());
 

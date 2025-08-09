@@ -5,6 +5,7 @@
 !/test/test_shape_mismatch.cpp
 !/test/test_gen_fft.cpp
 !/test/ir_test.c
+!/test/test-scalehls-hida
 .vscode
 .clangd
 .cache

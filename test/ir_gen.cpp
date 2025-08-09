@@ -5,6 +5,7 @@
 
 #include "llvm/ADT/ArrayRef.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
+#include "mlir/IR/BuiltinDialect.h"
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/IR/Builders.h"
 #include "mlir/IR/DialectRegistry.h"
@@ -30,11 +31,13 @@ int main(int argc, char **argv) {
 
     // Initialize MLIR context and register dialects
     mlir::DialectRegistry registry;
-    registry.insert<mlir::sar::SARDialect>();
-    registry.insert<mlir::func::FuncDialect>();
+    registry.insert<mlir::BuiltinDialect,
+                    mlir::func::FuncDialect,
+                    mlir::sar::SARDialect>();
     mlir::MLIRContext context(registry);
-    context.loadDialect<mlir::sar::SARDialect>();
-    context.loadDialect<mlir::func::FuncDialect>();
+    context.loadDialect<mlir::BuiltinDialect,
+                        mlir::func::FuncDialect,
+                        mlir::sar::SARDialect>();
 
     // Create OpBuilder
     mlir::OpBuilder builder(&context);
@@ -89,9 +92,9 @@ int main(int argc, char **argv) {
     auto const2 = createConstTensor(2.0f);
 
     // Build computation graph: (arg0 + const1) - (arg1 * const2)
-    auto add = builder.create<mlir::sar::AddOp>(loc, tensor_type, arg0, const1);
-    auto mul = builder.create<mlir::sar::MulOp>(loc, tensor_type, arg1, const2);
-    auto result = builder.create<mlir::sar::SubOp>(loc, tensor_type, add, mul);
+    auto add = builder.create<mlir::sar::ElemAddOp>(loc, tensor_type, arg0, const1);
+    auto mul = builder.create<mlir::sar::ElemMulOp>(loc, tensor_type, arg1, const2);
+    auto result = builder.create<mlir::sar::ElemSubOp>(loc, tensor_type, add, mul);
 
     // Add return operation
     builder.create<mlir::func::ReturnOp>(loc, result.getResult());
@@ -130,7 +133,7 @@ int main(int argc, char **argv) {
         }
         mlir::OpPrintingFlags flags;
         module.print(outputFile, flags);
-        outputFile << "\n";  // Ensure newline at end of file
+        outputFile << "\n";
         outputFile.close();
         llvm::outs() << "Successfully generated MLIR file: " << outFile << "\n";
     }
