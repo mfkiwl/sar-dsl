@@ -9,6 +9,9 @@ endif()
 if(POLICY CMP0114)
     cmake_policy(SET CMP0114 NEW)
 endif()
+if(POLICY CMP0148)
+    cmake_policy(SET CMP0148 NEW)
+endif()
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 20)
@@ -17,6 +20,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_compile_options(-fPIC)
 add_compile_options(-fno-rtti)
+
+find_package(pybind11 REQUIRED)
 
 set(LLVM_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/externals/llvm-project/build")
 
@@ -43,6 +48,7 @@ include(MLIRConfig)
 include(TableGen)
 include(AddLLVM)
 include(AddMLIR)
+include(AddMLIRPython)
 
 include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${MLIR_INCLUDE_DIRS})
@@ -54,7 +60,12 @@ get_property(extension_libs GLOBAL PROPERTY MLIR_EXTENSION_LIBS)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
+# Build order: include first for TableGen, then lib, then tools, then test, finally python
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
 add_subdirectory(test)
+
+if(MLIR_ENABLE_BINDINGS_PYTHON)
+    add_subdirectory(python)
+endif()

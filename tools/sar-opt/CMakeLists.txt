@@ -29,4 +29,8 @@ target_link_libraries(sar-opt
     ${LIBS}
 )
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU|AppleClang")
+  target_compile_options(sar-opt PRIVATE -Wno-deprecated -Wno-deprecated-declarations)
+endif()
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

@@ -173,15 +173,15 @@ struct FuncSignatureConversion : public OpConversionPattern<func::FuncOp> {
             }
         }
 
-        // Update all SAR tensor types within function body
+        // Update all SAR tensor-like types within function body
         for (Block &block : newFunc.getBody()) {
             for (Operation &op0 : llvm::make_early_inc_range(block.getOperations())) {
                 for (auto result : op0.getResults()) {
-                    auto sarType = llvm::dyn_cast<RankedTensorType>(result.getType());
-                    if (!sarType)
+                    auto ranked = llvm::dyn_cast<RankedTensorType>(result.getType());
+                    if (!ranked)
                         continue;
-                    Type t = getTypeConverter()->convertType(sarType);
-                    if (!t || t == sarType)
+                    Type t = getTypeConverter()->convertType(ranked);
+                    if (!t || t == ranked)
                         continue;
                     auto cast = rewriter.create<UnrealizedConversionCastOp>(
                         result.getLoc(), t, result);
@@ -214,12 +214,18 @@ namespace mlir::sar {
 
 // Initialize type conversions for SAR dialect
 void initSARToLinalgTypeConvert(TypeConverter &typeConverter) {
-
-    // Convert SAR tensor types to standard ranked tensors
+    // Convert SAR tensor-like types to standard ranked tensors
     typeConverter.addConversion([](mlir::sar::TensorType type) -> Type {
         return RankedTensorType::get(type.getShape(), type.getElementType());
     });
+    typeConverter.addConversion([](mlir::sar::MatrixType type) -> Type {
+        return RankedTensorType::get(type.getShape(), type.getElementType());
+    });
+    typeConverter.addConversion([](mlir::sar::VectorType type) -> Type {
+        return RankedTensorType::get(type.getShape(), type.getElementType());
+    });
 
+    // Passthrough standard tensor types
     typeConverter.addConversion([](RankedTensorType type) -> Type { return type; });
     typeConverter.addConversion([](UnrankedTensorType type) -> Type { return type; });
 }

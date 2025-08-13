@@ -40,6 +40,7 @@ void configSARToLinalgTarget(TypeConverter &typeConverter, ConversionTarget &tar
     target.addLegalDialect<linalg::LinalgDialect>();
     target.addLegalDialect<arith::ArithDialect>();
 
+    // Lower away the SAR dialect via provided conversions (now covering Tensor/Matrix/Vector)
     target.addIllegalDialect<sar::SARDialect>();
 
     target.addLegalOp<UnrealizedConversionCastOp>();

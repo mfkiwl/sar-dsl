@@ -26,7 +26,9 @@ cmake -G Ninja ../llvm \
     -DLLVM_ENABLE_ASSERTIONS=ON \
     -DLLVM_USE_LINKER=lld \
     -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_CXX_COMPILER=clang++
+    -DCMAKE_CXX_COMPILER=clang++ \
+    -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
+    -DPython3_EXECUTABLE=$(which python)
 
 ninja
 ```
@@ -72,7 +74,10 @@ ninja scalehls-opt scalehls-translate
 ```bash
 cd ../../..  # sar-dsl/
 mkdir build && cd build
-cmake -G Ninja ..
+cmake -G Ninja .. \
+    -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
+    -Dpybind11_DIR=$(python -m pybind11 --cmakedir)
+
 ninja
 ```
 
@@ -81,7 +86,9 @@ ninja
 ```bash
 export PATH=$PWD/bin:$PATH && \
 export PATH=$PWD/../externals/llvm-project/build/bin:$PATH && \
-export PATH=$PWD/../externals/ScaleHLS-HIDA/build/bin:$PATH
+export PATH=$PWD/../externals/ScaleHLS-HIDA/build/bin:$PATH && \
+export PYTHONPATH=$PWD/../externals/llvm-project/build/tools/mlir/python_packages/mlir_core:$PYTHONPATH && \
+export PYTHONPATH=$PWD/python/python_packages:$PYTHONPATH
 ```
 
 - Test generate mlir

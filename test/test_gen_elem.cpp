@@ -1,4 +1,4 @@
-// test/ir_gen.cpp
+// test/test_gen_elem.cpp
 
 #include <fstream>
 #include <filesystem>

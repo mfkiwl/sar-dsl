@@ -47,19 +47,19 @@ class SAR_UnaryOp<string mnemonic,
 
 def ConstOp : SAR_Op<"const", [Pure]> {
     let arguments = (ins ElementsAttr:$value);
-    let results = (outs AnySARTensor:$result);
+    let results = (outs AnySARSharedType:$result);
 }
 
-def ElemAddOp : SAR_BinaryOp<"elem_add", AnySARTensor, AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
-def ElemSubOp : SAR_BinaryOp<"elem_sub", AnySARTensor, AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
-def ElemMulOp : SAR_BinaryOp<"elem_mul", AnySARTensor, AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
-def ElemDivOp : SAR_BinaryOp<"elem_div", AnySARTensor, AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
+def ElemAddOp : SAR_BinaryOp<"elem_add", AnySARSharedType, AnySARSharedType, AnySARSharedType> { let hasVerifier = 1; }
+def ElemSubOp : SAR_BinaryOp<"elem_sub", AnySARSharedType, AnySARSharedType, AnySARSharedType> { let hasVerifier = 1; }
+def ElemMulOp : SAR_BinaryOp<"elem_mul", AnySARSharedType, AnySARSharedType, AnySARSharedType> { let hasVerifier = 1; }
+def ElemDivOp : SAR_BinaryOp<"elem_div", AnySARSharedType, AnySARSharedType, AnySARSharedType> { let hasVerifier = 1; }
 
-def FFTnDimOp  : SAR_UnaryOp<"fft_ndim",  AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
-def IFFTnDimOp : SAR_UnaryOp<"ifft_ndim", AnySARTensor, AnySARTensor> { let hasVerifier = 1; }
+def FFTnDimOp  : SAR_UnaryOp<"fft_ndim",  AnySARSharedType, AnySARSharedType> { let hasVerifier = 1; }
+def IFFTnDimOp : SAR_UnaryOp<"ifft_ndim", AnySARSharedType, AnySARSharedType> { let hasVerifier = 1; }
 
-def FFTDimxOp  : SAR_UnaryOp<"fft_dimx",  AnySARTensor, AnySARTensor, [Pure], (ins I64Attr:$dim)> { let hasVerifier = 1; }
-def IFFTDimxOp : SAR_UnaryOp<"ifft_dimx", AnySARTensor, AnySARTensor, [Pure], (ins I64Attr:$dim)> { let hasVerifier = 1; }
+def FFTDimxOp  : SAR_UnaryOp<"fft_dimx",  AnySARSharedType, AnySARSharedType, [Pure], (ins I64Attr:$dim)> { let hasVerifier = 1; }
+def IFFTDimxOp : SAR_UnaryOp<"ifft_dimx", AnySARSharedType, AnySARSharedType, [Pure], (ins I64Attr:$dim)> { let hasVerifier = 1; }
 
 def VecMatMulBrdcstOp
     : SAR_BinaryOp<"vec_mat_mul_brdcst",

@@ -2,6 +2,7 @@
 
 #include "mlir/IR/Types.h"
 #include "llvm/Support/Casting.h"
+#include "mlir/IR/BuiltinTypes.h"
 
 #include "Dialect/SAR/IR/SARDialect.h"
 #include "Dialect/SAR/IR/SARTypes.h"
@@ -25,15 +26,15 @@ static LogicalResult verifyBinaryOpShapes(Operation *op) {
     auto rhs = op->getOperand(1);
     auto result = op->getResult(0);
 
-    auto lhsType = llvm::dyn_cast<mlir::sar::TensorType>(lhs.getType());
+    auto lhsType = llvm::dyn_cast<mlir::ShapedType>(lhs.getType());
     if (!lhsType)
-        return op->emitOpError("expected SAR tensor type for lhs");
-    auto rhsType = llvm::dyn_cast<mlir::sar::TensorType>(rhs.getType());
+        return op->emitOpError("expected shaped type for lhs");
+    auto rhsType = llvm::dyn_cast<mlir::ShapedType>(rhs.getType());
     if (!rhsType)
-        return op->emitOpError("expected SAR tensor type for rhs");
-    auto resultType = llvm::dyn_cast<mlir::sar::TensorType>(result.getType());
+        return op->emitOpError("expected shaped type for rhs");
+    auto resultType = llvm::dyn_cast<mlir::ShapedType>(result.getType());
     if (!resultType)
-        return op->emitOpError("expected SAR tensor type for result");
+        return op->emitOpError("expected shaped type for result");
 
     if (lhsType.getShape() != rhsType.getShape() || lhsType.getShape() != resultType.getShape()) {
         return op->emitOpError("operand and result shapes must be equal");
