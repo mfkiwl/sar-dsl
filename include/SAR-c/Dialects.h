@@ -1,5 +1,3 @@
-// include/SAR-c/Dialects.h
-
 #ifndef SAR_C_DIALECTS_H
 #define SAR_C_DIALECTS_H
 
@@ -27,4 +25,4 @@ MLIR_CAPI_EXPORTED MlirTypeID mlirSARVectorTypeGetTypeID(void);
 }
 #endif
 
-#endif // SAR_C_DIALECTS_H 
+#endif // SAR_C_DIALECTS_H

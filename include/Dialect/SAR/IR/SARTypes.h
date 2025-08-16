@@ -1,5 +1,3 @@
-// include/Dialect/SAR/IR/SARTypes.h
-
 #ifndef DIALECT_SAR_TYPES_H
 #define DIALECT_SAR_TYPES_H
 

@@ -1,5 +1,3 @@
-// include/Dialect/SAR/IR/SAROps.td
-
 #ifndef DIALECT_SAR_OPS_TD
 #define DIALECT_SAR_OPS_TD
 
@@ -46,8 +44,9 @@ class SAR_UnaryOp<string mnemonic,
 }
 
 def ConstOp : SAR_Op<"const", [Pure]> {
-    let arguments = (ins ElementsAttr:$value);
+    let arguments = (ins AnyAttrOf<[ElementsAttr, StrAttr]>:$value);
     let results = (outs AnySARSharedType:$result);
+    let hasVerifier = 1;
 }
 
 def ElemAddOp : SAR_BinaryOp<"elem_add", AnySARSharedType, AnySARSharedType, AnySARSharedType> { let hasVerifier = 1; }

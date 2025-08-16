@@ -1,5 +1,3 @@
-// include/Dialect/SAR/IR/SARTypes.td
-
 #ifndef DIALECT_SAR_TYPES_TD
 #define DIALECT_SAR_TYPES_TD
 

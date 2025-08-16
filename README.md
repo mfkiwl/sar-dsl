@@ -99,12 +99,16 @@ export PYTHONPATH=$PWD/python/python_packages:$PYTHONPATH
 ./test/test-shape-mismatch
 ```
 
-- Lowering to LLVM
+- Lowering to Linalg
 
 ```bash
 sar-opt ../test/MLIR/test_gen_elem.mlir --convert-sar-to-linalg \
     > ../test/MLIR/test_gen_elem_output.mlir
+```
 
+- Test LLVM output
+
+```bash
 mlir-opt ../test/MLIR/test_gen_elem_output.mlir \
     --one-shot-bufferize="bufferize-function-boundaries" \
     --convert-linalg-to-loops \
@@ -115,11 +119,7 @@ mlir-opt ../test/MLIR/test_gen_elem_output.mlir \
     --convert-cf-to-llvm \
     --reconcile-unrealized-casts \
     | mlir-translate --mlir-to-llvmir > ../test/output.ll
-```
 
-- Test LLVM output
-
-```bash
 clang -c ../test/output.ll -o ../test/output.o -Wno-override-module
 clang -c ../test/ir_test.c -o ../test/ir_test.o
 clang ../test/ir_test.o ../test/output.o -o ../test/ir_test
@@ -144,4 +144,12 @@ scalehls-opt ../test/MLIR/test_gen_elem_output.mlir \
     | scalehls-translate \
     -scalehls-emit-hlscpp -emit-vitis-directives \
     > ../test/emitHLS/hls_output.cpp
+```
+
+- Test python frontend
+
+```bash
+python ../test/test_debug.py
+python ../test/test_elem.py
+python ../test/test_fft.py
 ```

@@ -1,5 +1,3 @@
-// test/ir_test.c
-
 #include <stdio.h>
 #include <stdlib.h>
 

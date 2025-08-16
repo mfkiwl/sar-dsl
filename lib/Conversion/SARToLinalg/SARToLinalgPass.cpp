@@ -1,5 +1,3 @@
-// lib/Conversion/SARToLinalg/SARToLinalgPass.cpp
-
 #include <memory>
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/Debug.h"
@@ -10,6 +8,8 @@
 #include "mlir/Dialect/Func/IR/FuncOps.h"
 #include "mlir/Dialect/Func/Transforms/FuncConversions.h"
 #include "mlir/IR/BuiltinOps.h"
+#include "mlir/Pass/Pass.h"
+#include "mlir/Pass/PassManager.h"
 #include "mlir/Transforms/DialectConversion.h"
 
 #include "Dialect/SAR/IR/SARDialect.h"
@@ -29,8 +29,8 @@ namespace mlir::sar {
 using namespace ::mlir;
 using namespace ::mlir::sar;
 
-struct SARToLinalgPassPass
-    : public mlir::sar::impl::ConvertSARToLinalgPassBase<SARToLinalgPassPass> {
+struct ConvertSARToLinalgPass
+    : public mlir::sar::impl::ConvertSARToLinalgPassBase<ConvertSARToLinalgPass> {
     void runOnOperation() override;
 };
 
@@ -40,7 +40,6 @@ void configSARToLinalgTarget(TypeConverter &typeConverter, ConversionTarget &tar
     target.addLegalDialect<linalg::LinalgDialect>();
     target.addLegalDialect<arith::ArithDialect>();
 
-    // Lower away the SAR dialect via provided conversions (now covering Tensor/Matrix/Vector)
     target.addIllegalDialect<sar::SARDialect>();
 
     target.addLegalOp<UnrealizedConversionCastOp>();
@@ -58,7 +57,7 @@ void configSARToLinalgTarget(TypeConverter &typeConverter, ConversionTarget &tar
     });
 }
 
-void SARToLinalgPassPass::runOnOperation() {
+void ConvertSARToLinalgPass::runOnOperation() {
     LLVM_DEBUG(llvm::dbgs() << llvm::formatv("run in {0}\n", getPassName()));
     auto model = getOperation();
     TypeConverter type_convert;
@@ -70,4 +69,17 @@ void SARToLinalgPassPass::runOnOperation() {
     if (failed(applyPartialConversion(model, target, std::move(patterns))))
         signalPassFailure();
     LLVM_DEBUG(llvm::dbgs() << llvm::formatv("run out {0}\n", getPassName()));
+}
+
+void mlir::sar::registerSARPassPipelines() {
+    static PassPipelineRegistration<> sarToLinalgPipeline(
+        "sar-to-linalg-pipeline",
+        "SAR to Linalg conversion pipeline",
+        [](OpPassManager &pm) { pm.addPass(mlir::sar::createConvertSARToLinalgPass()); });
+}
+
+mlir::LogicalResult mlir::sar::runSARToLinalgPipeline(mlir::ModuleOp module) {
+    PassManager pm(module.getContext());
+    pm.addPass(mlir::sar::createConvertSARToLinalgPass());
+    return pm.run(module);
 }

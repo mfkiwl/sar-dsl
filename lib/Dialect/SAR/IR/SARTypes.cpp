@@ -1,10 +1,9 @@
-// lib/Dialect/SAR/IR/SARTypes.cpp
-
 #include "llvm/ADT/TypeSwitch.h"
 #include "llvm/Support/LogicalResult.h"
 #include "llvm/Support/raw_ostream.h"
 #include "mlir/Dialect/Arith/IR/Arith.h"
 #include "mlir/IR/BuiltinTypeInterfaces.h"
+#include "mlir/IR/BuiltinTypes.h"
 #include "mlir/IR/DialectImplementation.h"
 #include "mlir/IR/OpImplementation.h"
 #include "mlir/Support/LLVM.h"
@@ -17,6 +16,14 @@
 
 namespace mlir::sar {
 
+static bool isSupportedElementType(Type elementType) {
+    if (elementType.isIntOrFloat())
+        return true;
+    if (auto ct = llvm::dyn_cast<mlir::ComplexType>(elementType))
+        return llvm::isa<mlir::FloatType>(ct.getElementType());
+    return false;
+}
+
 void SARDialect::registerTypes() {
     // llvm::outs() << "Register " << getDialectNamespace() << " type\n";
     addTypes<
@@ -28,8 +35,8 @@ void SARDialect::registerTypes() {
 ::llvm::LogicalResult TensorType::verify(
     ::llvm::function_ref<::mlir::InFlightDiagnostic()> emitError,
     ::llvm::ArrayRef<int64_t> shape, Type elementType) {
-    if (!elementType.isIntOrFloat()) {
-        return emitError() << "tensor element type must be integer or float";
+    if (!isSupportedElementType(elementType)) {
+        return emitError() << "tensor element type must be integer, float, or complex of float";
     }
     return ::mlir::success();
 }
@@ -71,8 +78,8 @@ void TensorType::print(AsmPrinter &printer) const {
     if (shape.size() != 2) {
         return emitError() << "matrix must have exactly 2 dimensions";
     }
-    if (!elementType.isIntOrFloat()) {
-        return emitError() << "matrix element type must be integer or float";
+    if (!isSupportedElementType(elementType)) {
+        return emitError() << "matrix element type must be integer, float, or complex of float";
     }
     return ::mlir::success();
 }
@@ -114,8 +121,8 @@ void MatrixType::print(AsmPrinter &printer) const {
     if (shape.size() != 1) {
         return emitError() << "vector must have exactly 1 dimension";
     }
-    if (!elementType.isIntOrFloat()) {
-        return emitError() << "vector element type must be integer or float";
+    if (!isSupportedElementType(elementType)) {
+        return emitError() << "vector element type must be integer, float, or complex of float";
     }
     return ::mlir::success();
 }

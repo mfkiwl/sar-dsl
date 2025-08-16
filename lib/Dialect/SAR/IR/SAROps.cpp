@@ -1,8 +1,7 @@
-// lib/Dialect/SAR/IR/SAROps.cpp
-
 #include "mlir/IR/Types.h"
 #include "llvm/Support/Casting.h"
 #include "mlir/IR/BuiltinTypes.h"
+#include "mlir/AsmParser/AsmParser.h"
 
 #include "Dialect/SAR/IR/SARDialect.h"
 #include "Dialect/SAR/IR/SARTypes.h"
@@ -65,6 +64,37 @@ static LogicalResult verifyUnaryOpShapes(Operation *op) {
     return success();
 }
 
+LogicalResult ConstOp::verify() {
+    auto resTy = llvm::dyn_cast<mlir::ShapedType>(getResult().getType());
+    if (!resTy)
+        return emitOpError("result must be a shaped SAR type");
+
+    Attribute raw = getValueAttr();
+    DenseElementsAttr elems;
+    if (auto de = llvm::dyn_cast<DenseElementsAttr>(raw)) {
+        elems = de;
+    } else if (auto s = llvm::dyn_cast<StringAttr>(raw)) {
+        Attribute parsed = mlir::parseAttribute(s.getValue(), getOperation()->getContext());
+        elems = llvm::dyn_cast_or_null<DenseElementsAttr>(parsed);
+        if (!elems)
+            return emitOpError("value StringAttr did not parse to DenseElementsAttr");
+    } else {
+        return emitOpError("value must be DenseElementsAttr or StringAttr");
+    }
+
+    auto ranked = llvm::dyn_cast<RankedTensorType>(elems.getType());
+    if (!ranked)
+        return emitOpError("dense elements must have ranked tensor type");
+
+    if (ranked.getElementType() != resTy.getElementType())
+        return emitOpError("element type mismatch between value and result type");
+
+    if (ranked.getShape() != resTy.getShape())
+        return emitOpError("shape mismatch between value and result type");
+
+    return success();
+}
+
 LogicalResult ElemAddOp::verify() {
     return verifyBinaryOpShapes(getOperation());
 }
@@ -99,8 +129,8 @@ LogicalResult FFTDimxOp::verify() {
     if (!dimAttr)
         return emitOpError("missing dim attribute");
     int64_t d = dimAttr.getInt();
-    if (d < 0 || d > 2)
-        return emitOpError("dim must be one of {0,1,2}");
+    if (d < 0)
+        return emitOpError("dim must be non-negative");
     if (d >= inputType.getRank())
         return emitOpError("dim must be less than input rank");
     return success();
@@ -116,8 +146,8 @@ LogicalResult IFFTDimxOp::verify() {
     if (!dimAttr)
         return emitOpError("missing dim attribute");
     int64_t d = dimAttr.getInt();
-    if (d < 0 || d > 2)
-        return emitOpError("dim must be one of {0,1,2}");
+    if (d < 0)
+        return emitOpError("dim must be non-negative");
     if (d >= inputType.getRank())
         return emitOpError("dim must be less than input rank");
     return success();

@@ -1,5 +1,3 @@
-// lib/Dialect/SAR/IR/SARDialect.cpp
-
 #include "Dialect/SAR/IR/SARDialect.h"
 
 #include "Dialect/SAR/IR/SARDialect.cpp.inc"
@@ -17,7 +15,7 @@ SARDialect::~SARDialect() {
 }
 
 void SARDialect::sayHello() {
-    // llvm::outs() << "Hello from " << getDialectNamespace() << "\n";
+    llvm::outs() << "Hello from " << getDialectNamespace() << "\n";
 }
 
 } // namespace mlir::sar

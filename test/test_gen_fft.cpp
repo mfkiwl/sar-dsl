@@ -1,5 +1,3 @@
-// test/test_gen_fft.cpp
-
 #include <fstream>
 #include <filesystem>
 
@@ -79,10 +77,8 @@ int main(int argc, char **argv) {
     auto t_ifft_nd = builder.create<mlir::sar::IFFTnDimOp>(loc, tensor_type, tensorArg);
     auto t_fft_d0 = builder.create<mlir::sar::FFTDimxOp>(loc, tensor_type, tensorArg, builder.getI64IntegerAttr(0));
     auto t_fft_d1 = builder.create<mlir::sar::FFTDimxOp>(loc, tensor_type, tensorArg, builder.getI64IntegerAttr(1));
-    // removed: t_fft_d2 (not required by test spec)
     auto t_ifft_d0 = builder.create<mlir::sar::IFFTDimxOp>(loc, tensor_type, tensorArg, builder.getI64IntegerAttr(0));
     auto t_ifft_d1 = builder.create<mlir::sar::IFFTDimxOp>(loc, tensor_type, tensorArg, builder.getI64IntegerAttr(1));
-    // removed: t_ifft_d2 (not required by test spec)
 
     // Apply FFT operations on Matrix: FFTnDim, IFFTNDim, FFTDimx (0,1), IFFTDimx (0,1)
     auto m_fft_nd = builder.create<mlir::sar::FFTnDimOp>(loc, matrix_type, matrixArg);

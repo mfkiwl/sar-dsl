@@ -1,5 +1,3 @@
-# python/test_debug.py
-
 import sys
 import traceback
 
@@ -29,14 +27,12 @@ def test_basic_imports():
     return True
 
 def test_sar_dialect_import():
-    print("\nTesting SAR dialect imports...")
+    print("Testing SAR dialect imports...")
     try:
         import mlir.dialects.sar
         from mlir.ir import Context
         print("✓ mlir.dialects.sar imported successfully")
-        
-        # Test registration with explicit context
-        # Create a fresh context to avoid conflicts
+
         ctx = Context()
         mlir.dialects.sar.register_dialect(ctx)
         print("✓ SAR dialect registered successfully")
@@ -48,12 +44,11 @@ def test_sar_dialect_import():
         return False
 
 def test_sar_types():
-    print("\nTesting SAR types...")
+    print("Testing SAR types...")
     try:
-        from mlir.dialects.sar import TensorType, register_dialect
-        from mlir.ir import Context, F32Type
-        
-        # Use a fresh context and register SAR dialect on it
+        from mlir.dialects.sar import TensorType, MatrixType, VectorType, register_dialect
+        from mlir.ir import Context, F32Type, F64Type, IntegerType, ComplexType
+
         ctx = Context()
         register_dialect(ctx, load=True)
         with ctx:
@@ -67,9 +62,26 @@ def test_sar_types():
         return False
 
 def test_frontend():
-    print("\nTesting frontend...")
+    print("Testing frontend...")
     try:
-        from mlir.dialects.sar import sar_func, float32, fft_ndim, fft_dimx
+        from mlir.dialects.sar import (
+            sar_func,
+            float32,
+            int32,
+            float64,
+            int64,
+            complex64,
+            complex128,
+            fft_ndim,
+            fft_dimx,
+            ifft_ndim,
+            ifft_dimx,
+            vec_mat_mul_brdcst,
+            lower_to_linalg_text,
+            TensorType,
+            MatrixType,
+            VectorType,
+        )
         print("✓ Frontend imports successful")
         
         @sar_func
@@ -80,10 +92,9 @@ def test_frontend():
         module = simple_forward()
         module_str = str(module)
         print(f"✓ Generated MLIR:\n{module_str}")
-        
-        # Basic checks
+
         assert "sar.fft_ndim" in module_str, "Missing sar.fft_ndim in generated MLIR"
-        print("✓ All frontend tests passed!")
+        print("✓ Frontend tests passed!")
         return True
         
     except Exception as e:
@@ -92,6 +103,7 @@ def test_frontend():
         return False
 
 def main():
+    print("=" * 50)
     print("SAR Dialect Debug Test")
     print("=" * 50)
     
@@ -102,12 +114,11 @@ def main():
     all_passed &= test_sar_types()
     all_passed &= test_frontend()
     
-    print("\n" + "=" * 50)
     if all_passed:
-        print("🎉 All tests passed!")
+        print("All tests passed.\n")
     else:
-        print("❌ Some tests failed!")
+        print("Some tests failed.\n")
         sys.exit(1)
 
 if __name__ == "__main__":
-    main() 
+    main()

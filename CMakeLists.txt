@@ -1,16 +1,14 @@
-# Top CMakeLists.txt
-
 cmake_minimum_required(VERSION 3.15)
 project(mlir-sar LANGUAGES C CXX)
 
 if(POLICY CMP0116)
-    cmake_policy(SET CMP0116 NEW)
+  cmake_policy(SET CMP0116 NEW)
 endif()
 if(POLICY CMP0114)
-    cmake_policy(SET CMP0114 NEW)
+  cmake_policy(SET CMP0114 NEW)
 endif()
 if(POLICY CMP0148)
-    cmake_policy(SET CMP0148 NEW)
+  cmake_policy(SET CMP0148 NEW)
 endif()
 
 set(CMAKE_C_STANDARD 17)
@@ -26,18 +24,18 @@ find_package(pybind11 REQUIRED)
 set(LLVM_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/externals/llvm-project/build")
 
 if(NOT EXISTS "${LLVM_BUILD_DIR}")
-    message(FATAL_ERROR "LLVM build directory not found: ${LLVM_BUILD_DIR}")
+  message(FATAL_ERROR "LLVM build directory not found: ${LLVM_BUILD_DIR}")
 endif()
 
 set(LLVM_DIR "${LLVM_BUILD_DIR}/lib/cmake/llvm")
 set(MLIR_DIR "${LLVM_BUILD_DIR}/lib/cmake/mlir")
 
 if(NOT EXISTS "${LLVM_DIR}/LLVMConfig.cmake")
-    message(FATAL_ERROR "LLVMConfig.cmake not found in: ${LLVM_DIR}")
+  message(FATAL_ERROR "LLVMConfig.cmake not found in: ${LLVM_DIR}")
 endif()
 
 if(NOT EXISTS "${MLIR_DIR}/MLIRConfig.cmake")
-    message(FATAL_ERROR "MLIRConfig.cmake not found in: ${MLIR_DIR}")
+  message(FATAL_ERROR "MLIRConfig.cmake not found in: ${MLIR_DIR}")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH ${LLVM_DIR})
@@ -60,12 +58,11 @@ get_property(extension_libs GLOBAL PROPERTY MLIR_EXTENSION_LIBS)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
-# Build order: include first for TableGen, then lib, then tools, then test, finally python
 add_subdirectory(include)
 add_subdirectory(lib)
 add_subdirectory(tools)
 add_subdirectory(test)
 
 if(MLIR_ENABLE_BINDINGS_PYTHON)
-    add_subdirectory(python)
+  add_subdirectory(python)
 endif()

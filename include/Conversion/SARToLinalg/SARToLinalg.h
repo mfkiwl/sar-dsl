@@ -1,5 +1,3 @@
-// include/Conversion/SARToLinalg/SARToLinalg.h
-
 #ifndef CONVERSION_SARTOLINALG_H
 #define CONVERSION_SARTOLINALG_H
 
@@ -7,6 +5,7 @@
 
 namespace mlir {
     class TypeConverter;
+    class ModuleOp;
 }  // namespace mlir
 
 namespace mlir::sar {
@@ -18,6 +17,10 @@ void populateSARToLinalgPatterns(TypeConverter &typeConverter,
 
 #define GEN_PASS_DECL_CONVERTSARTOLINALGPASS
 #include "Conversion/Passes.h.inc"
+
+void registerSARPassPipelines();
+
+mlir::LogicalResult runSARToLinalgPipeline(mlir::ModuleOp module);
 
 }  // namespace mlir::sar
 

@@ -1,5 +1,3 @@
-// test/test_shape_mismatch.cpp
-
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/IR/Builders.h"
 #include "mlir/IR/MLIRContext.h"
