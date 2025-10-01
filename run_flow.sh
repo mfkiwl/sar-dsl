@@ -63,7 +63,7 @@ run_tests() {
     log "Lowering SAR to Linalg ..."
     if command -v sar-opt >/dev/null 2>&1; then
         sar-opt "$ROOT_DIR/test/MLIR/test_gen_elem.mlir" \
-            --convert-sar-to-linalg \  # --sar-to-linalg-pipeline
+            --sar-to-linalg-pipeline \
             > "$ROOT_DIR/test/MLIR/test_gen_elem_output.mlir"
     else
         die "sar-opt not found in PATH"
