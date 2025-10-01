@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+set -e
+
 # ---------- Set log ----------
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
 log()  { echo -e "${BLUE}[INFO]${NC} $*"; }
@@ -61,7 +63,7 @@ run_tests() {
     log "Lowering SAR to Linalg ..."
     if command -v sar-opt >/dev/null 2>&1; then
         sar-opt "$ROOT_DIR/test/MLIR/test_gen_elem.mlir" \
-            --sar-to-linalg-pipeline \
+            --convert-sar-to-linalg \  # --sar-to-linalg-pipeline
             > "$ROOT_DIR/test/MLIR/test_gen_elem_output.mlir"
     else
         die "sar-opt not found in PATH"

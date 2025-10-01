@@ -52,7 +52,7 @@ cmake -G Ninja ../llvm \
 
 ninja
 
-cd ../../..
+cd ../../..  # externals/ScaleHLS-HIDA
 
 sed -i '18 a\
 set(LLVM_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/polygeist/llvm-project/build")\
@@ -152,4 +152,5 @@ scalehls-opt ../test/MLIR/test_gen_elem_output.mlir \
 python ../test/test_debug.py
 python ../test/test_elem.py
 python ../test/test_fft.py
+python test/test_compr.py
 ```
